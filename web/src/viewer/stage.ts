@@ -77,6 +77,29 @@ export function setupLighting(scene: THREE.Scene, renderer: THREE.WebGLRenderer)
   scene.add(rim);
 }
 
+/** Narrow field of view for the front icon, degrees. */
+const ICON_FOV = 12;
+/** Straight from the front (site icon). */
+export const FRONT_DIR = new THREE.Vector3(0, -1, 0.02).normalize();
+
+/** Fit `object` seen from the front along `dir` (width across X, height along Z). */
+export function frameFront({ camera, controls }: Stage, object: THREE.Object3D, margin = 1.3): void {
+  object.updateMatrixWorld(true);
+  camera.fov = ICON_FOV; // nearly orthographic: a flat, symmetric front silhouette
+  const box = new THREE.Box3().setFromObject(object);
+  const centre = box.getCenter(new THREE.Vector3());
+  const size = box.getSize(new THREE.Vector3());
+  const tanHalf = Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
+  const distance =
+    Math.max(size.z / 2 / tanHalf, size.x / 2 / (tanHalf * camera.aspect)) * margin + size.y / 2;
+  controls.target.copy(centre);
+  camera.position.copy(centre).addScaledVector(FRONT_DIR, distance);
+  camera.near = distance / 100;
+  camera.far = distance * 10;
+  camera.updateProjectionMatrix();
+  controls.update();
+}
+
 /** Looking down at a print bed from the front, slightly tilted. */
 const BED_DIR = new THREE.Vector3(0, -0.45, 1).normalize();
 

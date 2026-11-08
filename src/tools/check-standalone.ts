@@ -23,7 +23,7 @@ const BOX_TOL = 0.01;
  * such as rel=canonical are fine.
  */
 const EXTERNAL =
-  /<(script|img|iframe|source|video|audio)\b[^>]*\bsrc\s*=\s*"(?!data:)|<link\b[^>]*\brel="(stylesheet|preload|modulepreload|icon|manifest)"/i;
+  /<(script|img|iframe|source|video|audio)\b[^>]*\bsrc\s*=\s*"(?!data:)|<link\b(?=[^>]*\brel="(stylesheet|preload|modulepreload|icon|manifest)")(?![^>]*\bhref="data:)[^>]*>/i;
 
 function boundsAfter({ positions }: MeshData, m: Mat4): { min: number[]; max: number[] } {
   const min = [Infinity, Infinity, Infinity];

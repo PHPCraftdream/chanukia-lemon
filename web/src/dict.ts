@@ -9,6 +9,10 @@
  */
 
 export const en = {
+  'meta.title': 'Chanukia Lemon — a 3D-printable Chabad hanukkiah for tea lights',
+  'meta.description':
+    'Open-source Chabad-style hanukkiah for tea lights: interactive 3D model, gallery and free STL ' +
+    'files for 3D printing, with print-shop instructions.',
   'nav.model': '3D model',
   'nav.gallery': 'Gallery',
   'gallery.badge': 'Gallery',
@@ -122,6 +126,10 @@ export type Key = keyof typeof en;
 export type Dict = Record<Key, string>;
 
 export const ru: Dict = {
+  'meta.title': 'Chanukia Lemon — ханукия для чайных свечей для 3D-печати',
+  'meta.description':
+    'Хабадская ханукия для чайных свечей с открытым кодом: интерактивная 3D-модель, галерея ' +
+    'и бесплатные STL-файлы для 3D-печати с инструкцией для мастерской.',
   'nav.model': '3D-модель',
   'nav.gallery': 'Галерея',
   'gallery.badge': 'Галерея',
@@ -230,6 +238,10 @@ export const ru: Dict = {
 };
 
 export const he: Dict = {
+  'meta.title': 'Chanukia Lemon — חנוכייה בסגנון חב״ד לנרות טי־לייט להדפסת תלת־ממד',
+  'meta.description':
+    'חנוכייה בסגנון חב״ד לנרות טי־לייט בקוד פתוח: מודל תלת־ממד אינטראקטיבי, גלריה וקובצי STL ' +
+    'חינמיים להדפסת תלת־ממד, עם הוראות לבית הדפוס.',
   'nav.model': 'מודל תלת־ממד',
   'nav.gallery': 'גלריה',
   'gallery.badge': 'גלריה',

@@ -22,3 +22,8 @@ export const WEB_DIST = join(ROOT, 'web', 'dist');
 export const PRINT_ZIP = 'chanukia-lemon-print-files.zip';
 /** Screenshot of the model shown while the site loads it, inside the build output. */
 export const POSTER_FILE = 'poster.png';
+/** Site icon (front view, transparent) and home-screen icon, inside the build output. */
+export const ICON_FILE = 'icon.png';
+export const TOUCH_ICON_FILE = 'apple-touch-icon.png';
+/** Social preview image (Open Graph), inside the build output. */
+export const OG_FILE = 'og-image.png';

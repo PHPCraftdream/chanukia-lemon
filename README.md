@@ -116,9 +116,13 @@ src/
   affine.ts       assembled -> print matrix from two copies of a mesh
   credits.ts      author attribution (GPL-3.0 section 7(b))
   build.ts        CLI: STL + scene package
-  standalone.ts   CLI: the self-contained hanukia.html
-  tools/          review, render, compare-stl, check-standalone, docs
-web/              site: index.html, styles.css, src/ (i18n, themes, 3D viewer)
+  package.ts      CLI: ZIP for the print shop (STL, instructions, licences, links)
+  standalone.ts   CLI: the self-contained hanukia.html (poster and icon embedded)
+  site.ts         CLI: GitHub Pages site — /, /ru/, /he/, sitemap, preview image
+  seo.ts          per-language pages, hreflang, Open Graph, schema.org, sitemap
+  zip.ts crc32.ts minimal deterministic ZIP writer
+  tools/          review, render, compare-stl, check-standalone, docs, poster
+web/              site: index.html, styles.css, src/ (i18n, themes, viewer, gallery)
 test/             node:test suites
 root-docs/        README sources in three languages (polydoc)
 ```

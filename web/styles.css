@@ -441,6 +441,7 @@ html.poster-mode .viewer {
   box-shadow: none;
   backdrop-filter: none;
 }
+html.poster-mode .viewer-poster,
 html.poster-mode .bg-mesh,
 html.poster-mode .nav,
 html.poster-mode footer,
@@ -449,6 +450,12 @@ html.poster-mode .hero > div:first-child,
 html.poster-mode .viewer-bar,
 html.poster-mode .viewer-status {
   display: none;
+}
+html.og-mode body {
+  background: var(--bg-0);
+}
+html.poster-mode.og-mode .bg-mesh {
+  display: block;
 }
 html.poster-mode .viewer-canvas {
   position: fixed;
