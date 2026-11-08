@@ -1,6 +1,8 @@
 [![CI](https://github.com/PHPCraftdream/chanukia-lemon/actions/workflows/ci.yml/badge.svg)](https://github.com/PHPCraftdream/chanukia-lemon/actions/workflows/ci.yml)
 ![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue)
 
+<p align="center"><img src="docs/hanukia-front.png" alt="Chanukia Lemon — front view" width="100%"></p>
+
 # Chanukia Lemon — חנוכייה לנרות טי־לייט
 
 **שפות:** [English](README.md) · [Русский](README.ru.md) · **עברית**

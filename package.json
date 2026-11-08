@@ -25,6 +25,7 @@
     "compare": "node src/tools/compare-stl.ts",
     "docs": "node src/tools/docs.ts",
     "docs:check": "node src/tools/docs.ts --check",
+    "readme-image": "node src/tools/readme-image.ts",
     "typecheck": "tsc -p tsconfig.json && tsc -p web/tsconfig.json",
     "format": "prettier --write .",
     "format:check": "prettier --check ."

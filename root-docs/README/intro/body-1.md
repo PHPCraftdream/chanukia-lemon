@@ -2,8 +2,13 @@
 [![CI](https://github.com/PHPCraftdream/chanukia-lemon/actions/workflows/ci.yml/badge.svg)](https://github.com/PHPCraftdream/chanukia-lemon/actions/workflows/ci.yml)
 ![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue)
 
+>>>>> shared=hero
+<p align="center"><img src="docs/hanukia-front.png" alt="Chanukia Lemon — front view" width="100%"></p>
+
 >>>>> lang=en
 <<<<< include=badges
+
+<<<<< include=hero
 
 # Chanukia Lemon — a hanukkiah for tea lights
 
@@ -22,6 +27,8 @@ files for a print shop, a 3D site in a single HTML file, and inspection renders.
 >>>>> lang=ru
 <<<<< include=badges
 
+<<<<< include=hero
+
 # Chanukia Lemon — ханукия для чайных свечей
 
 **Языки:** [English](README.md) · **Русский** · [עברית](README.he.md)
@@ -38,6 +45,8 @@ files for a print shop, a 3D site in a single HTML file, and inspection renders.
 
 >>>>> lang=he
 <<<<< include=badges
+
+<<<<< include=hero
 
 # Chanukia Lemon — חנוכייה לנרות טי־לייט
 

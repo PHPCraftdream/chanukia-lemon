@@ -27,3 +27,5 @@ export const ICON_FILE = 'icon.png';
 export const TOUCH_ICON_FILE = 'apple-touch-icon.png';
 /** Social preview image (Open Graph), inside the build output. */
 export const OG_FILE = 'og-image.png';
+/** README header image (front view), relative to the repository root. */
+export const README_IMAGE = 'docs/hanukia-front.png';
