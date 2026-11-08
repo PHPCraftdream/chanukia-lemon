@@ -26,6 +26,7 @@ jobs:
       - run: npm ci
       - run: npm run format:check
       - run: npm run typecheck
+      - run: npm run docs:check
       - run: npm test
 
   build:
@@ -43,8 +44,8 @@ jobs:
         run: |
           mkdir -p site
           cp out_chabad/hanukia.html site/index.html
-          cp out_chabad/chabad_*.stl site/
-          cp LICENSE NOTICE site/
+          cp out_chabad/chabad_*.stl out_chabad/chanukia-lemon-print-files.zip site/
+          cp LICENSE LICENSE-MODELS.md NOTICE site/
           touch site/.nojekyll
           ls -la site
       - uses: actions/upload-pages-artifact@v3

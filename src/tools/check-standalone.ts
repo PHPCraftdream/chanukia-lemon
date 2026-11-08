@@ -18,8 +18,12 @@ import { readStl, stats } from '../stl.ts';
 
 /** Bounding box tolerance, mm. */
 const BOX_TOL = 0.01;
-/** Attributes that would load something from outside the page. */
-const EXTERNAL = /<(script|link|img|iframe)\b[^>]*\b(src|href)\s*=/i;
+/**
+ * Tags that would load something from outside the page. Inline `data:` sources and links
+ * such as rel=canonical are fine.
+ */
+const EXTERNAL =
+  /<(script|img|iframe|source|video|audio)\b[^>]*\bsrc\s*=\s*"(?!data:)|<link\b[^>]*\brel="(stylesheet|preload|modulepreload|icon|manifest)"/i;
 
 function boundsAfter({ positions }: MeshData, m: Mat4): { min: number[]; max: number[] } {
   const min = [Infinity, Infinity, Infinity];

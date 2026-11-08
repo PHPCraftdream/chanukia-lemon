@@ -64,6 +64,7 @@ function main(outDir: string): void {
         color: part.color,
         printFile: `${part.file}.stl`,
         explode: v.explode,
+        ...(v.slide ? { slide: v.slide } : {}),
       });
     }
   }

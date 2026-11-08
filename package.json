@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "description": "Parametric Chabad-style hanukkiah for tea lights: STL generator, assembly checks, inspection renders and a 3D viewer",
-  "license": "GPL-3.0-only",
+  "license": "GPL-3.0-only AND LicenseRef-Chanukia-Lemon-Model-License-1.0",
   "author": "PHPCraftdream",
   "homepage": "https://phpcraftdream.github.io/chanukia-lemon/",
   "repository": {
@@ -14,15 +14,18 @@
     "node": ">=24"
   },
   "scripts": {
-    "build": "npm run build:stl && npm run build:viewer",
-    "build:stl": "node src/build.ts",
-    "build:viewer": "rspack build --mode production && node src/standalone.ts && node src/tools/check-standalone.ts",
+    "build": "npm run build:stl && npm run build:site",
+    "build:stl": "node src/build.ts && node src/package.ts",
+    "build:site": "rspack build --mode production && node src/standalone.ts && node src/tools/poster.ts && node src/standalone.ts && node src/tools/check-standalone.ts",
+    "package": "node src/package.ts",
+    "site": "rspack serve",
     "test": "node --test --test-concurrency=1 \"test/**/*.test.ts\"",
     "review": "node src/tools/review.ts",
     "render": "node src/tools/render.ts",
     "compare": "node src/tools/compare-stl.ts",
-    "viewer": "rspack serve",
-    "typecheck": "tsc -p tsconfig.json && tsc -p viewer/tsconfig.json",
+    "docs": "node src/tools/docs.ts",
+    "docs:check": "node src/tools/docs.ts --check",
+    "typecheck": "tsc -p tsconfig.json && tsc -p web/tsconfig.json",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
@@ -31,6 +34,7 @@
     "three": "^0.187.0"
   },
   "devDependencies": {
+    "@ktav-lang/polydoc": "^0.1.1",
     "@rspack/cli": "^2.3.0",
     "@rspack/core": "^2.3.0",
     "@rspack/dev-server": "^2.2.2",
