@@ -18,7 +18,7 @@ import { playIntro } from './viewer/intro.ts';
 import { assemblyOf, loadScene, printSetOf } from './viewer/models.ts';
 import type { Placed, Scene } from './viewer/models.ts';
 import type { PackedInstance } from '../../src/scene-pack.ts';
-import { createStage, frame, frameFromAbove } from './viewer/stage.ts';
+import { createStage, frame, frameFromAbove, frameFront } from './viewer/stage.ts';
 import type { Stage } from './viewer/stage.ts';
 
 const HIGHLIGHT = 0x664400;
@@ -47,13 +47,16 @@ const partKey = (file: string): Key =>
 /** Numbers keep their left-to-right order inside right-to-left text. */
 const ltr = (text: string): string => `<bdi dir="ltr">${text}</bdi>`;
 
+/** Where the downloadable files are, relative to this page ('../' on the /ru/ and /he/ pages). */
+const ASSET_BASE = document.documentElement.dataset.assetBase ?? '';
+
 const fileRow = (lang: Lang, f: PackedFile): string =>
   `<tr data-file="${f.file}">` +
   `<td>${t(lang, partKey(f.file))}<div class="file">${f.file}</div></td>` +
   `<td class="num">${ltr(`×${f.qty}`)}</td>` +
   `<td class="num">${ltr(f.size.join(' × '))}</td>` +
   `<td class="num">${ltr(String(f.volumeCm3))} ${t(lang, 'files.cm3')}</td>` +
-  `<td><a class="btn btn-ghost btn-small" href="${f.file}" download>${t(lang, 'files.download')}</a></td>` +
+  `<td><a class="btn btn-ghost btn-small" href="${ASSET_BASE}${f.file}" download>${t(lang, 'files.download')}</a></td>` +
   `</tr>`;
 
 /** Wire the language buttons; `onChange` re-renders language-dependent dynamic content. */
@@ -83,7 +86,12 @@ function setupTheme(onChange: () => void): void {
 }
 
 /** `?poster` renders only the model on a transparent page (the build screenshots it). */
-const POSTER_MODE = new URLSearchParams(location.search).has('poster');
+const PARAMS = new URLSearchParams(location.search);
+/** `?og` renders the model on the page background for the social preview image. */
+const OG_MODE = PARAMS.has('og');
+/** `?icon` renders the model straight from the front, tightly framed, for the site icon. */
+const ICON_MODE = PARAMS.has('icon');
+const POSTER_MODE = PARAMS.has('poster') || OG_MODE || ICON_MODE;
 
 interface Model {
   highlight: (file: string | null) => void;
@@ -165,6 +173,8 @@ function renderFiles(
 
 async function main(): Promise<void> {
   if (POSTER_MODE) document.documentElement.classList.add('poster-mode');
+  if (OG_MODE) document.documentElement.classList.add('og-mode');
+  if (ICON_MODE && PARAMS.get('icon') === 'bg') document.documentElement.classList.add('og-mode');
   let gallery: Gallery | null = null;
   setupTheme(() => gallery?.refresh());
   const status = byId('status');
@@ -187,6 +197,7 @@ async function main(): Promise<void> {
     const stage = createStage(host);
     scene = await loadScene();
     model = setupModel(stage, scene);
+    if (ICON_MODE) frameFront(stage, model.assembly);
     if (!POSTER_MODE) {
       gallery = setupGallery(model.parts, lang());
       requestAnimationFrame(() => {

@@ -28,10 +28,15 @@ export function t(lang: Lang, key: Key, vars: Record<string, string | number> = 
   return DICTS[lang][key].replace(/\{(\w+)\}/g, (_, name: string) => String(vars[name] ?? `{${name}}`));
 }
 
-/** `?lang=` in the address, else the saved choice, else the browser language, else English. */
+/**
+ * `?lang=` in the address, else the language of a language sub-page, else the saved choice,
+ * else the browser language, else English.
+ */
 export function initialLang(): Lang {
   const fromUrl = new URLSearchParams(location.search).get('lang');
   if (isLang(fromUrl)) return fromUrl;
+  const page = document.documentElement.dataset.pageLang; // /ru/, /he/ pages (see src/seo.ts)
+  if (isLang(page)) return page;
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (isLang(saved)) return saved;
@@ -54,6 +59,8 @@ function remember(lang: Lang): void {
 export function applyLang(lang: Lang, root: ParentNode = document): void {
   document.documentElement.lang = lang;
   document.documentElement.dir = RTL.has(lang) ? 'rtl' : 'ltr';
+  document.title = t(lang, 'meta.title');
+  document.querySelector('meta[name="description"]')?.setAttribute('content', t(lang, 'meta.description'));
   for (const el of root.querySelectorAll<HTMLElement>('[data-i18n]')) {
     el.textContent = t(lang, el.dataset.i18n as Key);
   }

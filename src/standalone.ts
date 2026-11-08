@@ -12,7 +12,7 @@
  */
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { OUT_DIR, POSTER_FILE, SCENE_FILE, STANDALONE_FILE, WEB_DIST } from './paths.ts';
+import { ICON_FILE, OUT_DIR, POSTER_FILE, SCENE_FILE, STANDALONE_FILE, WEB_DIST } from './paths.ts';
 import { DATA_ELEMENT_ID } from './scene-pack.ts';
 
 /** The external bundle reference HtmlRspackPlugin injects. */
@@ -20,6 +20,9 @@ const BUNDLE_TAG = /<script\b[^>]*\bsrc="main\.js"[^>]*><\/script>/;
 
 /** The poster placeholder from web/index.html (as minified by the HTML plugin). */
 const POSTER_TAG = /<img\b[^>]*\bid="poster"[^>]*>/;
+
+/** The drawn fallback icon from web/index.html, replaced by the rendered one when available. */
+const ICON_TAG = /<link\b[^>]*\brel="icon"[^>]*>/;
 
 /** Keep `</script` inside inlined code from closing the tag early. */
 const escapeScript = (code: string): string => code.replaceAll('</script', '<\\/script');
@@ -42,6 +45,11 @@ function main(outDir: string): void {
       POSTER_TAG,
       `<img class="viewer-poster" id="poster" alt="" src="data:image/png;base64,${png}" />`,
     );
+  }
+  const iconPath = join(outDir, ICON_FILE);
+  if (existsSync(iconPath)) {
+    const icon = readFileSync(iconPath).toString('base64');
+    page = page.replace(ICON_TAG, `<link rel="icon" type="image/png" href="data:image/png;base64,${icon}">`);
   }
   const path = join(outDir, STANDALONE_FILE);
   writeFileSync(path, page);

@@ -16,7 +16,7 @@
   "scripts": {
     "build": "npm run build:stl && npm run build:site",
     "build:stl": "node src/build.ts && node src/package.ts",
-    "build:site": "rspack build --mode production && node src/standalone.ts && node src/tools/poster.ts && node src/standalone.ts && node src/tools/check-standalone.ts",
+    "build:site": "rspack build --mode production && node src/standalone.ts && node src/tools/poster.ts && node src/standalone.ts && node src/tools/check-standalone.ts && node src/site.ts",
     "package": "node src/package.ts",
     "site": "rspack serve",
     "test": "node --test --test-concurrency=1 \"test/**/*.test.ts\"",
