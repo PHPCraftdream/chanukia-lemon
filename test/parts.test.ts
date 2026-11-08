@@ -12,7 +12,9 @@ import { meshOf, stats } from '../src/stl.ts';
 /** Printer build volume the parts must fit (mm). */
 const BED = { x: 300, y: 300, z: 250 };
 /** Smallest plausible part volume (mm³) — catches empty booleans. */
-const MIN_VOLUME = 5000;
+const MIN_VOLUME = 2000;
+/** The fit-test coupon must stay small (material). */
+const MAX_FIT_TEST_VOLUME = 8000;
 
 describe('print parts', () => {
   it('cover 8 lights + shamash: every branch file is printed twice', () => {
@@ -25,10 +27,15 @@ describe('print parts', () => {
     it(`${part.file}: closed, non-trivial, on the bed, fits the printer`, () => {
       const world = part.world();
       assert.equal(world.status(), 'NoError');
-      const s = stats(meshOf(part.print(world)));
+      const printed = part.print(world);
+      const s = stats(meshOf(printed));
       assert.equal(s.watertight, true, 'mesh must be watertight');
       assert.ok(s.volume > MIN_VOLUME, `volume ${s.volume.toFixed(0)} mm3 too small`);
-      assert.ok(Math.abs(s.min[2]) < 1e-3, `must rest on z = 0, min z = ${s.min[2]}`);
+      // every separate body in the file must rest on the bed, not float above it
+      for (const body of printed.decompose()) {
+        const z0 = body.boundingBox().min[2];
+        assert.ok(Math.abs(z0) < 1e-3, `a body starts at z = ${z0}, not on the bed`);
+      }
       const [x, y, z] = s.size;
       assert.ok(
         Math.max(x, y) <= BED.x && Math.min(x, y) <= BED.y && z <= BED.z,
@@ -36,4 +43,11 @@ describe('print parts', () => {
       );
     });
   }
+
+  it('the fit-test coupon uses little material', () => {
+    const coupon = PRINT_PARTS.find((p) => p.file === 'chabad_fit_test');
+    assert.ok(coupon);
+    const v = coupon.world().volume();
+    assert.ok(v < MAX_FIT_TEST_VOLUME, `fit test is ${(v / 1000).toFixed(1)} cm3`);
+  });
 });

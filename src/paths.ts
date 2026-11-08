@@ -16,5 +16,9 @@ export const OUT_DIR = join(ROOT, 'out_chabad');
 export const SCENE_FILE = 'viewer-data.bin';
 /** Self-contained viewer page, inside the build output. */
 export const STANDALONE_FILE = 'hanukia.html';
-/** rspack output of the viewer bundle. */
-export const VIEWER_DIST = join(ROOT, 'viewer', 'dist');
+/** rspack output of the site. */
+export const WEB_DIST = join(ROOT, 'web', 'dist');
+/** Archive for the print shop (STL + instructions + licence), inside the build output. */
+export const PRINT_ZIP = 'chanukia-lemon-print-files.zip';
+/** Screenshot of the model shown while the site loads it, inside the build output. */
+export const POSTER_FILE = 'poster.png';

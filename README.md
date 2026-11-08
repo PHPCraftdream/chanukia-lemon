@@ -1,139 +1,155 @@
-# Chanukia Lemon — ханукия для чайных свечей
-
 [![CI](https://github.com/PHPCraftdream/chanukia-lemon/actions/workflows/ci.yml/badge.svg)](https://github.com/PHPCraftdream/chanukia-lemon/actions/workflows/ci.yml)
+![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue)
 
-**Сайт с 3D-моделью и файлами для печати: https://phpcraftdream.github.io/chanukia-lemon/**
+# Chanukia Lemon — a hanukkiah for tea lights
 
-Параметрическая модель хабадской ханукии для 3D-печати: центральный ствол на ножке,
-прямые ветви под 45° с завязями (капторим), листьями и рельефом «языки пламени»,
-чаши под чайные свечи с венками, шамаш наверху ствола.
+**Languages:** **English** · [Русский](README.ru.md) · [עברית](README.he.md)
 
-Код на TypeScript: геометрия строится библиотекой [manifold-3d](https://github.com/elalish/manifold)
-(WASM), на выходе STL для мастерской, 3D-просмотрщик одним HTML-файлом и проверочные картинки.
+**Website with the 3D model and print files:** https://phpcraftdream.github.io/chanukia-lemon/
 
-## Быстрый старт
+A parametric Chabad-style hanukkiah for 3D printing: a central stem on a foot,
+straight 45° branches with knops (kaftorim), leaves and flame-tongue reliefs,
+tea-light cups with laurel wreaths, and the shamash on top of the stem.
 
-Нужен Node.js ≥ 24 (запускает `.ts` напрямую, без сборки).
+The code is TypeScript. The geometry is built with
+[manifold-3d](https://github.com/elalish/manifold) (WebAssembly); the output is STL
+files for a print shop, a 3D site in a single HTML file, and inspection renders.
+
+## Quick start
+
+Node.js 24 or newer runs the `.ts` sources directly, without a build step.
 
 ```sh
 npm install
-npm run build          # STL и out_chabad/hanukia.html
+npm run build          # STL + out_chabad/hanukia.html
+npm test
 ```
 
-`out_chabad/hanukia.html` — самодостаточный просмотрщик: открывается двойным щелчком,
-без сервера и интернета (код и модели вшиты в файл, ~6 МБ). Его можно отправить кому угодно.
+`out_chabad/hanukia.html` is the whole site in one file: it opens with a double click,
+without a server or internet access (code and models are embedded, about 6 MB).
 
-| Команда                | Что делает                                                              |
-| ---------------------- | ----------------------------------------------------------------------- |
-| `npm run build`        | `build:stl` + `build:viewer`                                            |
-| `npm run build:stl`    | детали → STL в `out_chabad/` + пакет сцены `out_chabad/viewer-data.bin` |
-| `npm run build:viewer` | rspack-бандл просмотрщика → `out_chabad/hanukia.html` + его проверка    |
-| `npm test`             | тесты (`node:test`): расстановка, форматы, детали, посадки в сборке     |
-| `npm run review`       | проверка сборки: касания, зазоры, пути установки, слабые сечения ствола |
-| `npm run render`       | проверочные PNG (крупные планы и разрезы) → `out_chabad/inspect/`       |
-| `npm run compare A B`  | сравнить два набора STL по объёму и габаритам (для рефакторинга)        |
-| `npm run viewer`       | dev-сервер просмотрщика (rspack) на http://localhost:5173               |
-| `npm run typecheck`    | проверка типов (Node-код и код просмотрщика)                            |
-| `npm run format`       | форматирование (Prettier)                                               |
+| Command                | What it does                                                    |
+| ---------------------- | --------------------------------------------------------------- |
+| `npm run build`        | `build:stl` + `build:site`                                      |
+| `npm run build:stl`    | parts → STL in `out_chabad/` + the scene package for the site   |
+| `npm run build:site`   | site bundle (rspack) → `out_chabad/hanukia.html` + its check    |
+| `npm run site`         | site dev server on http://localhost:5173                        |
+| `npm test`             | tests (`node:test`): layout, formats, parts, fits, translations |
+| `npm run review`       | assembly review: contacts, clearances, insertion paths          |
+| `npm run render`       | inspection PNGs (close-ups and sections) → `out_chabad/inspect/` |
+| `npm run docs`         | rebuild the README in three languages from `root-docs/`         |
+| `npm run typecheck`    | type checks (Node code and the site)                            |
 
-## Файлы для мастерской
+## Files for the print shop
 
-Все `chabad_*.stl` из `out_chabad/`, кроме `chabad_full.stl` (цельная модель только для просмотра).
+All `chabad_*.stl` from `out_chabad/` (also downloadable from the website), except
+`chabad_full.stl`, which is the whole hanukkiah as one model for viewing only.
 
-| Файл                           | Кол-во | Примечание                                   |
-| ------------------------------ | -----: | -------------------------------------------- |
-| `chabad_fit_test.stl`          |      1 | **печатать первым**: проверка посадок        |
-| `chabad_stem_lower.stl`        |      1 | ножка и низ ствола                           |
-| `chabad_stem_upper.stl`        |      1 | верх ствола с шамашем                        |
-| `chabad_branch1_x2.stl` … `3`  |   по 2 | ветви (правая и левая одинаковые)            |
-| `chabad_branch4a_inner_x2.stl` |      2 | длинная ветвь, внутренняя половина           |
-| `chabad_branch4b_outer_x2.stl` |      2 | длинная ветвь, внешняя половина              |
-| `chabad_rod_pin_x1.stl`        |      1 | левая половина стержня жёсткости (со штырём) |
-| `chabad_rod_socket_x1.stl`     |      1 | правая половина стержня (с гнездом)          |
+| File                           | Qty | Note                                        |
+| ------------------------------ | --: | ------------------------------------------- |
+| `chabad_fit_test.stl`          |   1 | **print first**: checks the fits            |
+| `chabad_stem_lower.stl`        |   1 | foot and lower stem                         |
+| `chabad_stem_upper.stl`        |   1 | upper stem with the shamash                 |
+| `chabad_branch1_x2.stl` … `3`  |   2 | branches (left and right are identical)     |
+| `chabad_branch4a_inner_x2.stl` |   2 | long branch, inner half                     |
+| `chabad_branch4b_outer_x2.stl` |   2 | long branch, outer half                     |
+| `chabad_rod_pin_x1.stl`        |   1 | left half of the stiffening rod (with pin)  |
+| `chabad_rod_socket_x1.stl`     |   1 | right half of the rod (with socket)         |
 
-Рекомендации для печати (FDM): PETG; стол ≥ 300 мм; ствол и ножка — 4 периметра, гироид 12–15 %;
-ветви — 4–5 периметров, гироид 25–30 %; стержни, шипы, штыри — сплошные; слой 0,12–0,16 мм
-для рельефа. Ветви печатаются с поддержками, верх ствола — с полями (brim).
+## Printing
 
-Свечи — в алюминиевых гильзах; горящую ханукию не оставлять без присмотра.
+FDM, PETG. Recommended settings:
 
-## Сборка изделия
+- bed of at least 300 mm (the longest branch is 298 mm; the rods fit diagonally on 256 mm);
+- stem and foot: 4 perimeters, gyroid infill 12–15 %;
+- branches: 4–5 perimeters, gyroid infill 25–30 %;
+- rods, tenons and pins: solid;
+- layer 0.12–0.16 mm to keep the reliefs crisp;
+- branches print with supports, the upper stem with a brim.
 
-1. Соединить половины ствола (штыри с обжимными рёбрами), стык проклеить.
-2. Вставить ветви **от ствола наружу**: 1, 2, 3, затем длинную (сначала собрать её из двух половин).
-   Каждая ветвь входит вдоль своей оси: шип в гнездо, трубка в углубление узла.
-3. Вставить половины стержня с двух сторон через отверстия в чашах до защёлкивания «джека» в стволе.
-4. Капнуть клей (эпоксидка или цианоакрилат) в каждое отверстие стержня в чашах с тыльной стороны.
+Use tea lights only in their aluminium cups and never leave a lit hanukkiah unattended.
 
-Посадки: по телу детали зазор 0,15 мм на сторону, обжимные рёбра дают натяг ≈ 0,1 мм.
-Отверстия под стержень в чашах увеличены (зазор 0,75 мм) — они поглощают погрешности печати
-и усадку; положение стержня задаёт точное отверстие в стволе. Если тестовый образец входит
-слишком туго или болтается — поправить константы в `src/params.ts` (`SOCKET_R`, `ROD_HOLE_R`,
-высоты рёбер `*_RIB_H`) и пересобрать.
+## Assembly
 
-## Параметры
+1. Join the stem halves (pins with crush ribs) and glue the joint.
+2. Insert the branches **from the stem outwards**: 1, 2, 3, then the long one (assemble it
+   from its two halves first). Each branch slides in along its own axis: the tenon into the
+   socket, the tube into the recess of the knob.
+3. Push the two rod halves through the holes in the cups from both sides until the "jack"
+   inside the stem snaps in.
+4. Put a drop of glue (epoxy or CA) into every rod hole in the cups from the back.
 
-Все размеры — в [`src/params.ts`](src/params.ts) (с описанием каждого). Главные:
+Fits: 0.15 mm clearance per side on the body of a part; the crush ribs give about 0.1 mm
+of interference. The rod holes in the cups are oversized (0.75 mm clearance) to absorb print
+errors and shrinkage; the precise hole in the stem sets the rod line. If the fit test is too
+tight or too loose, adjust `SOCKET_R`, `ROD_HOLE_R` and the rib heights `*_RIB_H` in
+`src/params.ts` and rebuild.
 
-| Параметр                         | Значение | Смысл                                 |
-| -------------------------------- | -------: | ------------------------------------- |
-| `POCKET_D`                       |    40 мм | диаметр гнезда под свечу              |
-| `GAP`                            |    14 мм | зазор между чашами (шаг свечей 60 мм) |
-| `STEM_OFFSET`                    |    20 мм | отступ чаш от ствола (жар от шамаша)  |
-| `SHAMASH_LIFT`                   |    50 мм | шамаш выше остальных                  |
-| `STEM_R` / `BRANCH_R` / `FOOT_R` |          | толщина ствола, ветвей, радиус ножки  |
-| `Z_J0`                           |    84 мм | высота нижней ветви над столом        |
+## Parameters
 
-Габарит изделия: 545 × 180 × 414 мм.
+All sizes live in [`src/params.ts`](src/params.ts), each with a description. The main ones:
 
-## Устройство кода
+| Parameter                        | Value | Meaning                                       |
+| -------------------------------- | ----: | --------------------------------------------- |
+| `POCKET_D`                       | 40 mm | pocket diameter for the tea light             |
+| `GAP`                            | 14 mm | gap between cups (candle pitch 60 mm)         |
+| `STEM_OFFSET`                    | 20 mm | cups moved away from the stem (shamash heat)  |
+| `SHAMASH_LIFT`                   | 50 mm | how much higher the shamash stands            |
+| `STEM_R` / `BRANCH_R` / `FOOT_R` |       | stem and branch thickness, foot radius        |
+| `Z_J0`                           | 84 mm | height of the lowest branch above the table   |
+
+Overall size: 545 × 180 × 414 mm.
+
+## Code layout
 
 ```
 src/
-  params.ts       все параметры
-  layout.ts       расстановка ветвей, чаш, завязей (чистая математика)
-  geom.ts         инициализация manifold-3d, учёт памяти WASM, примитивы
-  fits.ts         посадки: рёбра, D-отверстия, разрезы со штырями
-  decor.ts        венок, канавки, чашечка листьев, листья, языки пламени
-  parts/          детали: cup, branch, stem, rod, fit-test
-  assembly.ts     каталог деталей для печати и сборка целиком
-  stl.ts          запись/чтение STL, объём, герметичность
-  scene-pack.ts   формат пакета сцены для просмотрщика (общий для Node и браузера)
-  affine.ts       восстановление матрицы «сборка → печать» по двум копиям сетки
-  paths.ts        пути проекта
-  build.ts        CLI: STL + пакет сцены
-  standalone.ts   CLI: сборка автономного hanukia.html
-  tools/
-    review.ts            проверка сборки
-    render.ts            проверочные картинки (свой растеризатор: raster.ts)
-    compare-stl.ts       сравнение наборов STL
-    check-standalone.ts  проверка hanukia.html (без внешних ссылок, данные = STL)
-viewer/           просмотрщик на three.js (src/, index.html), бандл — rspack (rspack.config.ts)
+  params.ts       all parameters
+  layout.ts       placement of branches, cups and knops (pure math)
+  geom.ts         manifold-3d set-up, WASM memory tracking, primitives
+  fits.ts         joints: ribs, D-holes, split cuts with pins
+  decor.ts        wreath, grooves, calyx, leaves, flame tongues
+  parts/          parts: cup, branch, stem, rod, fit-test
+  assembly.ts     print-part catalogue and the whole assembly
+  stl.ts          STL read/write, volume, watertightness
+  scene-pack.ts   scene package format for the site (Node and browser)
+  affine.ts       assembled -> print matrix from two copies of a mesh
+  credits.ts      author attribution (GPL-3.0 section 7(b))
+  build.ts        CLI: STL + scene package
+  standalone.ts   CLI: the self-contained hanukia.html
+  tools/          review, render, compare-stl, check-standalone, docs
+web/              site: index.html, styles.css, src/ (i18n, themes, 3D viewer)
+test/             node:test suites
+root-docs/        README sources in three languages (polydoc)
 ```
 
-Пакет сцены хранит каждую уникальную деталь один раз (индексированная сетка, gzip);
-левые копии и раскладка для печати задаются матрицами, поэтому HTML в ~15 раз меньше STL.
+Coordinates: Z up, the stem axis is Z, branches lie in the XZ plane (+X is the right half),
+the front faces −Y. Parts are built for the right half; the left half is a mirror image.
 
-Система координат: Z вверх, ось ствола — Z, ветви в плоскости XZ (+X — правая половина),
-фронт смотрит в −Y. Детали строятся для правой половины, левая — зеркало.
+After changing the geometry: `npm run build`, then `npm run review` and `npm run render`,
+and look at the pictures. For a refactoring that must not change the shape,
+`npm run compare <reference> out_chabad` must report `same` for every file.
 
-Правило при изменениях геометрии: `npm run build`, затем `npm run review` и `npm run render`
-и просмотр картинок. При рефакторинге без изменения формы — `npm run compare <эталон> out_chabad`
-должен показать `same` для всех файлов.
+## CI and the website
 
-## CI и сайт
+On every push and pull request GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml))
+checks formatting, types, tests and the README translations, then builds the models and the
+site. From `main` the result is published to GitHub Pages: the home page is the site with the
+3D model, and all STL files sit next to it for download.
 
-На каждый пуш и pull request GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml))
-проверяет форматирование, типы и тесты, затем собирает модели и просмотрщик. Из ветки `main`
-результат публикуется на GitHub Pages: главная страница — просмотрщик, рядом лежат все STL
-(названия деталей в списке — ссылки на скачивание).
+## License
 
-## Лицензия
+The project has two licenses (details in [NOTICE](NOTICE)):
 
-[GNU GPL v3](LICENSE) с дополнительным условием по разделу 7(b) — см. [NOTICE](NOTICE):
-любые копии и производные (код, сгенерированные модели, страницы просмотрщика, описания
-изделий) обязаны сохранять указание автора и ссылку на исходный репозиторий:
+- **source code** — [GNU GPL v3](LICENSE) with an attribution term under section 7(b);
+- **models** (the design, every STL, renders, printed objects and all derivatives,
+  including models from forks) — [Chanukia Lemon Model License](LICENSE-MODELS.md).
 
-> Chanukia Lemon by PHPCraftdream — https://github.com/PHPCraftdream/chanukia-lemon
+You may freely use, modify, share and print the models. **Printed objects made from these
+models, from forks or from any derivative may be sold only if every purchase includes the
+attribution with both links** (for example a card in the package):
 
-Атрибуция уже встроена в заголовок каждого STL и в просмотрщик.
+> Chanukia Lemon by PHPCraftdream — https://phpcraftdream.github.io/chanukia-lemon/ —
+> https://github.com/PHPCraftdream/chanukia-lemon
+
+The attribution is already embedded in the header of every STL and in the site.

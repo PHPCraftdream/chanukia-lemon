@@ -2,5 +2,10 @@ node_modules/
 out/
 out_chabad/
 out_ref/
-viewer/dist/
+web/dist/
 package-lock.json
+root-docs/
+README.md
+README.*.md
+PRINT-SHOP.md
+PRINT-SHOP.*.md

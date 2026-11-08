@@ -12,7 +12,7 @@
 import { ground, mirrorX, union } from './geom.ts';
 import type { Manifold, Vec3 } from './geom.ts';
 import { BRANCH_IDS } from './layout.ts';
-import { BRANCHES } from './params.ts';
+import { BRANCHES, X_ROD } from './params.ts';
 import { branchHalves, branchWorld, layBranch } from './parts/branch.ts';
 import { fitTest } from './parts/fit-test.ts';
 import { layRod, rodHalf } from './parts/rod.ts';
@@ -24,8 +24,13 @@ export interface ViewInstance {
   id: string;
   /** Left-half copy (mirror of the built right part). */
   mirror: boolean;
-  /** Unit-ish direction for the exploded view. */
+  /** Unit-ish direction for the second stage of the exploded view. */
   explode: Vec3;
+  /**
+   * Movement (mm) in the first stage of the exploded view, before anything else moves —
+   * the stiffening rod halves slide out of the cups along their axis.
+   */
+  slide?: Vec3;
 }
 
 /** A file for the print shop. */
@@ -45,7 +50,9 @@ export interface PrintPart {
 }
 
 const S = Math.SQRT1_2;
-const COLOR = { stem: '#c9b27c', branch: '#b9a06a', rod: '#9a7b4f', test: '#888888' } as const;
+/** How far a rod half slides out to clear every cup (mm): its own length plus a margin. */
+const ROD_PULL = X_ROD + 20;
+const COLOR = { stem: '#d6ad55', branch: '#cfa54c', rod: '#b48a3e', test: '#9a9a9a' } as const;
 const asIs = (m: Manifold): Manifold => m;
 
 /** A branch part: two mirrored copies sliding in along their 45° axes. */
@@ -95,7 +102,7 @@ export const PRINT_PARTS: readonly PrintPart[] = [
     color: COLOR.rod,
     world: () => mirrorX(rodHalf('pin')),
     print: layRod,
-    view: [{ id: 'rod_left', mirror: false, explode: [-1.6, 0, 0] }],
+    view: [{ id: 'rod_left', mirror: false, slide: [-ROD_PULL, 0, 0], explode: [0, 0, 1.6] }],
   },
   {
     file: 'chabad_rod_socket_x1',
@@ -103,7 +110,7 @@ export const PRINT_PARTS: readonly PrintPart[] = [
     color: COLOR.rod,
     world: () => rodHalf('socket'),
     print: layRod,
-    view: [{ id: 'rod_right', mirror: false, explode: [1.6, 0, 0] }],
+    view: [{ id: 'rod_right', mirror: false, slide: [ROD_PULL, 0, 0], explode: [0, 0, 1.6] }],
   },
   { file: 'chabad_fit_test', qty: 1, color: COLOR.test, world: fitTest, print: asIs, view: [] },
 ];

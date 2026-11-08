@@ -41,8 +41,10 @@ export interface PackedInstance {
   color: string;
   /** Print-shop file this copy is printed from. */
   printFile: string;
-  /** Direction for the exploded view. */
+  /** Direction for the second stage of the exploded view. */
   explode: [number, number, number];
+  /** First-stage movement, mm (the rod halves sliding out); absent = stays put. */
+  slide?: [number, number, number];
 }
 
 /** A file for the print shop. */

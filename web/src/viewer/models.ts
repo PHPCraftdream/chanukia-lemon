@@ -8,14 +8,19 @@
  * @module
  */
 import * as THREE from 'three';
-import { DATA_ELEMENT_ID, decodeScene } from '../../src/scene-pack.ts';
-import type { MeshData, PackedFile, PackedInstance, SceneHeader } from '../../src/scene-pack.ts';
+import { toCreasedNormals } from 'three/addons/utils/BufferGeometryUtils.js';
+import { DATA_ELEMENT_ID, decodeScene } from '../../../src/scene-pack.ts';
+import type { MeshData, PackedFile, PackedInstance, SceneHeader } from '../../../src/scene-pack.ts';
 
 /** Scene package URL on the dev server (see rspack.config.ts). */
 const DATA_URL = 'data/viewer-data.bin';
-const PRINT_COLOR = 0xb9a06a;
+const PRINT_COLOR = 0xc9a24a;
+/** Normals are smoothed across angles below this, kept sharp above (30°). */
+const CREASE_ANGLE = Math.PI / 6;
 /** Spacing between parts in the print layout, mm. */
 const PRINT_GAP = 25;
+/** Row width of the print layout, mm. */
+const PRINT_ROW = 640;
 
 export interface Scene {
   header: SceneHeader;
@@ -46,15 +51,17 @@ async function packageBytes(): Promise<Uint8Array> {
   return new Uint8Array(await res.arrayBuffer());
 }
 
-/** Flat-shaded geometry (STL-like look) from an indexed mesh. */
+/**
+ * Geometry with "creased" normals: smooth across gentle curvature (no visible facets on
+ * round surfaces), sharp across edges steeper than {@link CREASE_ANGLE} (cup rims, grooves).
+ */
 function geometryOf({ positions, indices }: MeshData): THREE.BufferGeometry {
   const indexed = new THREE.BufferGeometry();
   indexed.setAttribute('position', new THREE.BufferAttribute(positions, 3));
   indexed.setIndex(new THREE.BufferAttribute(indices, 1));
-  const flat = indexed.toNonIndexed();
+  const creased = toCreasedNormals(indexed, CREASE_ANGLE);
   indexed.dispose();
-  flat.computeVertexNormals();
-  return flat;
+  return creased;
 }
 
 export async function loadScene(): Promise<Scene> {
@@ -62,8 +69,9 @@ export async function loadScene(): Promise<Scene> {
   return { header, geometries: meshes.map(geometryOf) };
 }
 
+/** Polished brass; reflections come from the studio environment set up in stage.ts. */
 const material = (color: THREE.ColorRepresentation): THREE.MeshStandardMaterial =>
-  new THREE.MeshStandardMaterial({ color, metalness: 0.35, roughness: 0.45, side: THREE.DoubleSide });
+  new THREE.MeshStandardMaterial({ color, metalness: 0.85, roughness: 0.3, side: THREE.DoubleSide });
 
 function place<T>(
   geometry: THREE.BufferGeometry,
@@ -83,26 +91,48 @@ function place<T>(
 export const assemblyOf = ({ header, geometries }: Scene): Placed<PackedInstance>[] =>
   header.instances.map((inst) => place(geometries[inst.mesh], inst.matrix, inst.color, inst));
 
-function sizeOf(p: Placed<PackedFile>): THREE.Vector3 {
-  p.root.updateMatrixWorld(true);
-  return new THREE.Box3().setFromObject(p.mesh).getSize(new THREE.Vector3());
+/** Bounding box of a placed part (in its parent's space, without the root offset). */
+function boxOf(p: Placed<PackedFile>): THREE.Box3 {
+  p.mesh.updateMatrixWorld(true);
+  return new THREE.Box3().setFromObject(p.mesh);
 }
-const byLengthDesc = (a: Placed<PackedFile>, b: Placed<PackedFile>): number => sizeOf(b).x - sizeOf(a).x;
+const lengthOf = (p: Placed<PackedFile>): number => boxOf(p).getSize(new THREE.Vector3()).x;
+const byLengthDesc = (a: Placed<PackedFile>, b: Placed<PackedFile>): number => lengthOf(b) - lengthOf(a);
 
-/** Print-shop files in print orientation, longest first, stacked along Y and centred. */
+/** Every printed copy of a file (`qty` of them). */
+const copiesOf =
+  (geometries: readonly THREE.BufferGeometry[]) =>
+  (f: PackedFile): Placed<PackedFile>[] =>
+    Array.from({ length: f.qty }, () => place(geometries[f.mesh], f.printMatrix, PRINT_COLOR, f));
+
+/**
+ * Every part to print, as many copies as needed, in print orientation, laid out in rows
+ * like on a print bed (longest first, rows up to {@link PRINT_ROW} mm), centred at the origin.
+ */
 export function printSetOf({ header, geometries }: Scene): {
   group: THREE.Group;
   items: Placed<PackedFile>[];
 } {
-  const items = header.files.map((f) => place(geometries[f.mesh], f.printMatrix, PRINT_COLOR, f));
+  const items = header.files.flatMap(copiesOf(geometries));
   const group = new THREE.Group();
+  let x = 0;
   let y = 0;
+  let rowDepth = 0;
   for (const item of [...items].sort(byLengthDesc)) {
-    const size = sizeOf(item);
-    item.root.position.set(-size.x / 2, y, 0);
-    y += size.y + PRINT_GAP;
+    const box = boxOf(item);
+    const size = box.getSize(new THREE.Vector3());
+    if (x > 0 && x + size.x > PRINT_ROW) {
+      x = 0;
+      y += rowDepth + PRINT_GAP;
+      rowDepth = 0;
+    }
+    item.root.position.set(x - box.min.x, y - box.min.y, -box.min.z);
+    x += size.x + PRINT_GAP;
+    rowDepth = Math.max(rowDepth, size.y);
     group.add(item.root);
   }
-  group.position.set(0, -y / 2, 0);
+  group.updateMatrixWorld(true); // apply the row offsets before measuring
+  const centre = new THREE.Box3().setFromObject(group).getCenter(new THREE.Vector3());
+  group.position.set(-centre.x, -centre.y, 0);
   return { group, items };
 }
