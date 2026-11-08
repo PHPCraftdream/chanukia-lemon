@@ -1,0 +1,42 @@
+{
+  "name": "chanukia-lemon",
+  "private": true,
+  "type": "module",
+  "description": "Parametric Chabad-style hanukkiah for tea lights: STL generator, assembly checks, inspection renders and a 3D viewer",
+  "license": "GPL-3.0-only",
+  "author": "PHPCraftdream",
+  "homepage": "https://phpcraftdream.github.io/chanukia-lemon/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PHPCraftdream/chanukia-lemon.git"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "npm run build:stl && npm run build:viewer",
+    "build:stl": "node src/build.ts",
+    "build:viewer": "rspack build --mode production && node src/standalone.ts && node src/tools/check-standalone.ts",
+    "test": "node --test --test-concurrency=1 \"test/**/*.test.ts\"",
+    "review": "node src/tools/review.ts",
+    "render": "node src/tools/render.ts",
+    "compare": "node src/tools/compare-stl.ts",
+    "viewer": "rspack serve",
+    "typecheck": "tsc -p tsconfig.json && tsc -p viewer/tsconfig.json",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {
+    "manifold-3d": "^3.5.4",
+    "three": "^0.187.0"
+  },
+  "devDependencies": {
+    "@rspack/cli": "^2.3.0",
+    "@rspack/core": "^2.3.0",
+    "@rspack/dev-server": "^2.2.2",
+    "@types/node": "^26.6.6",
+    "@types/three": "^0.187.0",
+    "prettier": "^3.9.10",
+    "typescript": "^7.0.2"
+  }
+}
