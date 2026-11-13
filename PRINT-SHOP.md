@@ -10,35 +10,42 @@ Website (3D model, latest files) and source code on GitHub:
 - 🌐 https://phpcraftdream.github.io/chanukia-lemon/
 - 💻 https://github.com/PHPCraftdream/chanukia-lemon
 
-The assembled hanukkiah is 545 × 180 × 414 mm and has 14 parts plus a small fit test.
+The assembled hanukkiah is 545 × 180 × 414 mm and has 20 parts plus a small fit test.
 
 ## What to print
 
-The number before `.stl` in the name (`_x2`, `_x1`) is how many copies to print.
+The number before `.stl` in the name (`_x4`, `_x2`, `_x1`) is how many copies to print.
 
-| File                           | Copies | Part                                    |
-| ------------------------------ | -----: | --------------------------------------- |
-| `chabad_fit_test.stl`          |      1 | fit test — **print it first**           |
-| `chabad_stem_lower.stl`        |      1 | foot and lower stem                     |
-| `chabad_stem_upper.stl`        |      1 | upper stem with the shamash cup         |
-| `chabad_branch1_x2.stl`        |      2 | branch 1                                |
-| `chabad_branch2_x2.stl`        |      2 | branch 2                                |
-| `chabad_branch3_x2.stl`        |      2 | branch 3                                |
-| `chabad_branch4a_inner_x2.stl` |      2 | branch 4, inner half                    |
-| `chabad_branch4b_outer_x2.stl` |      2 | branch 4, outer half                    |
-| `chabad_rod_pin_x1.stl`        |      1 | stiffening rod, left half               |
-| `chabad_rod_socket_x1.stl`     |      1 | stiffening rod, right half              |
+| File                            | Copies | Part                                                               |
+| ------------------------------- | -----: | ------------------------------------------------------------------ |
+| `chabad_fit_test.stl`           |      1 | fit test — **print it first**                                      |
+| `chabad_foot.stl`               |      1 | foot                                                               |
+| `chabad_stem_lower.stl`         |      1 | lower stem                                                         |
+| `chabad_stem_upper.stl`         |      1 | upper stem                                                         |
+| `chabad_shamash_cup.stl`        |      1 | shamash cup — heat-resistant plastic                               |
+| `chabad_branch1_x2.stl`         |      2 | branch 1 — heat-resistant plastic                                  |
+| `chabad_branch2a_inner_x2.stl`  |      2 | branch 2, inner half                                               |
+| `chabad_branch34a_inner_x4.stl` |      4 | branches 3 and 4, inner half                                       |
+| `chabad_branch23b_outer_x4.stl` |      4 | branches 2 and 3, outer half with the cup — heat-resistant plastic |
+| `chabad_branch4b_outer_x2.stl`  |      2 | branch 4, outer half with the cup — heat-resistant plastic         |
+| `chabad_rod_pin_x1.stl`         |      1 | stiffening rod, left half                                          |
+| `chabad_rod_socket_x1.stl`      |      1 | stiffening rod, right half                                         |
 
 ## Material and settings
 
-- FDM printer, **PETG** (it withstands the warmth of tea lights better than PLA).
-- Bed of at least 300 mm: the longest part is 298 mm; the rods fit diagonally on 256 mm.
-- Height: the upper stem is 240 mm tall.
+- FDM printer, **PETG** for the stem and the inner branch halves (it withstands warmth
+  better than PLA).
+- Bed of at least 256 mm: the longest parts are the rods (272 mm), they fit diagonally;
+  branch pieces are at most 211 mm.
+- Height: the stem pieces are up to 187 mm tall; the foot is 180 mm across.
+- Parts with cups — shamash cup, branch 1 and the outer branch halves: **heat-resistant
+  plastic** (ASA, ABS or PC). The shamash cup stands upright, opening up, no supports.
 - Stem and foot: 4 perimeters, gyroid infill 12–15 %, 5 top and bottom layers.
 - Branches: 4–5 perimeters, gyroid infill 25–30 %.
 - Rods, tenons and pins: solid (100 % infill).
 - Layer height 0.12–0.16 mm, nozzle 0.4 mm, to keep the reliefs and the fit ribs crisp.
-- Branches lie on the bed with supports; the upper stem stands upright with a brim.
+- Branches lie on the bed with supports; the foot lies flat; the lower and upper stem stand
+  upright with a brim.
 - Do not scale the models: the joints are sized to fit each other.
 
 ## Fit test first
@@ -48,17 +55,21 @@ hanukkiah: a block with two holes and two short plugs. Print it with the same pr
 material as the real parts, then push each plug into its hole — the ribbed one into the
 round hole, the one with a flat into the D-shaped hole.
 
+- Two plastics (PETG and a heat-resistant one) shrink differently: print the coupon in
+  both of them.
 - Plugs go in firmly by hand, without play: print the rest.
 - Too tight or too loose: tell the customer; the clearances are adjusted in the source
   and new files are generated.
 
 ## Assembly (for the customer)
 
-1. Join the stem halves on their pins and glue the joint.
-2. Insert the branches from the stem outwards: 1, 2, 3, then branch 4 assembled from its
-   two halves.
-3. Push the rod halves through the cups from both sides until they snap inside the stem.
-4. Put a drop of epoxy or CA glue into every rod hole in the cups from the back.
+1. Join the foot, the lower stem, the upper stem and the shamash cup on their pins and glue
+   the joints.
+2. Insert the branches from the stem outwards: 1, then the inner halves of 2, 3 and 4, then
+   the outer halves with the cups; glue every joint.
+3. Push the rod halves through the top knops under the cups from both sides until they snap
+   inside the stem.
+4. Put a drop of epoxy or CA glue into every rod hole in the top knops from the back.
 
 ## Safety and licence
 

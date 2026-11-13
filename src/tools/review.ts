@@ -8,9 +8,9 @@
  *
  * @module
  */
-import { assembledParts } from '../assembly.ts';
+import { assembledParts, branchPieceNames } from '../assembly.ts';
 import type { Manifold, Vec3 } from '../geom.ts';
-import { BRANCH_IDS, STEM_SPLIT_Z, cupX } from '../layout.ts';
+import { BRANCH_IDS, FOOT_SPLIT_Z, SHAMASH_SPLIT_Z, STEM_SPLIT_Z, cupX } from '../layout.ts';
 import * as P from '../params.ts';
 import { stem } from '../parts/stem.ts';
 
@@ -36,7 +36,6 @@ const scale = (d: Vec3, s: number): Vec3 => [d[0] * s, d[1] * s, d[2] * s];
 const overlap = (a: Manifold, b: Manifold): number => a.intersect(b).volume();
 const range = (from: number, to: number, step: number): number[] =>
   Array.from({ length: Math.floor((to - from) / step) + 1 }, (_, i) => from + i * step);
-const rightName = (j: number): string => `R${j}`;
 const byArea = (a: [number, number], b: [number, number]): number => a[1] - b[1];
 
 type Box = ReturnType<Manifold['boundingBox']>;
@@ -90,13 +89,12 @@ function sweep(
   console.log(`  ${label}: clear (seated rib crush ${fmt(seated)} mm3)`);
 }
 
-/** Insertion paths in assembly order: branches from the stem outwards, then the rod and stem halves. */
+/** Insertion paths in assembly order: branches from the stem outwards, then the rod and stem pieces. */
 function insertionPaths(): void {
   console.log('== 2. Insertion paths (order inner -> outer; overlap above seated baseline) ==');
-  const B = P.BRANCHES;
-  const order = [...BRANCH_IDS.slice(0, -1).map(rightName), `R${B}a`];
+  const pieces = BRANCH_IDS.map(branchPieceNames);
   const installed: string[] = [];
-  for (const n of order) {
+  for (const [n] of pieces) {
     sweep(
       `branch ${n} along its axis`,
       parts[n],
@@ -106,21 +104,20 @@ function insertionPaths(): void {
     );
     installed.push(n);
   }
-  sweep(
-    `branch R${B}b onto R${B}a`,
-    parts[`R${B}b`],
-    BRANCH_AXIS,
-    [`R${B}a`, `R${B - 1}`],
-    range(0.5, 80, 0.5),
-  );
+  for (const [inner, n] of pieces.filter((p) => p.length === 2)) {
+    sweep(`branch ${n} onto ${inner}`, parts[n], BRANCH_AXIS, installed, range(0.5, 80, 0.5));
+    installed.push(n);
+  }
   sweep(
     'rod R along +X (whole length)',
     parts.rod_R,
     [1, 0, 0],
-    ['stem_lo', 'stem_hi', ...installed, `R${B}b`],
+    ['stem_lo', 'stem_hi', ...installed],
     range(0.5, 290, 1),
   );
+  sweep('stem_lo down onto the foot', parts.stem_lo, [0, 0, 1], ['foot'], range(0.2, 12, 0.2));
   sweep('stem_hi down onto stem_lo', parts.stem_hi, [0, 0, 1], ['stem_lo'], range(0.2, 12, 0.2));
+  sweep('shamash cup down onto stem_hi', parts.shamash, [0, 0, 1], ['stem_hi'], range(0.2, 12, 0.2));
 }
 
 function keyDistances(): void {
@@ -130,9 +127,9 @@ function keyDistances(): void {
   console.log(
     `  shamash cup base above row cups: ${fmt(P.SHAMASH_LIFT)} mm; gap between cups: ${fmt(P.GAP)} mm`,
   );
-  console.log(`  rod bottom above cone bottom: ${fmt(P.Z_ROD - P.ROD_R - (P.Z_CUP - P.CONE_H))} mm`);
+  console.log(`  rod top below the cup cones: ${fmt(P.Z_CUP - P.CONE_H - (P.Z_ROD + P.ROD_R))} mm`);
   console.log(
-    `  rod clearance per side: stem ${(P.ROD_HOLE_R - P.ROD_R).toFixed(2)} mm, cups ${(P.ROD_HOLE_BR_R - P.ROD_R).toFixed(2)} mm`,
+    `  rod clearance per side: stem ${(P.ROD_HOLE_R - P.ROD_R).toFixed(2)} mm, top knops ${(P.ROD_HOLE_BR_R - P.ROD_R).toFixed(2)} mm`,
   );
 }
 
@@ -145,7 +142,8 @@ function stemSections(): void {
   rows.sort(byArea);
   for (const [z, a] of rows.slice(0, 5))
     console.log(`  z=${z}: ${fmt(a)} mm2 (${((a / plain) * 100).toFixed(0)}% of plain stem)`);
-  console.log(`  split z=${fmt(STEM_SPLIT_Z)}: ${fmt(st.slice(STEM_SPLIT_Z).area())} mm2`);
+  for (const z of [FOOT_SPLIT_Z, STEM_SPLIT_Z, SHAMASH_SPLIT_Z])
+    console.log(`  split z=${fmt(z)}: ${fmt(st.slice(z).area())} mm2`);
 }
 
 contactsAndClearances();

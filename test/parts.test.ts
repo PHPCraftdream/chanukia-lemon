@@ -2,7 +2,7 @@
 // Chanukia Lemon by PHPCraftdream — https://github.com/PHPCraftdream/chanukia-lemon
 /**
  * Every print-shop part: valid closed solid, sensible volume, rests on the bed,
- * fits a 300 × 300 × 250 mm printer.
+ * fits a 256 × 256 × 250 mm printer (long thin parts may lie diagonally).
  */
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
@@ -10,17 +10,27 @@ import { PRINT_PARTS } from '../src/assembly.ts';
 import { meshOf, stats } from '../src/stl.ts';
 
 /** Printer build volume the parts must fit (mm). */
-const BED = { x: 300, y: 300, z: 250 };
+const BED = { xy: 256, z: 250 };
 /** Smallest plausible part volume (mm³) — catches empty booleans. */
 const MIN_VOLUME = 2000;
 /** The fit-test coupon must stay small (material). */
 const MAX_FIT_TEST_VOLUME = 8000;
 
 describe('print parts', () => {
-  it('cover 8 lights + shamash: every branch file is printed twice', () => {
-    const branchFiles = PRINT_PARTS.filter((p) => p.file.includes('branch'));
-    assert.ok(branchFiles.length >= 4);
-    for (const p of branchFiles) assert.equal(p.qty, 2, p.file);
+  it('every copy to print is a copy in the assembly, and the file name says how many', () => {
+    for (const p of PRINT_PARTS.filter((q) => q.view.length > 0)) {
+      assert.equal(p.view.length, p.qty, p.file);
+      const n = /_x(\d+)$/.exec(p.file)?.[1];
+      if (n) assert.equal(Number(n), p.qty, p.file);
+    }
+  });
+
+  it('cover 8 lights + shamash: 20 parts, every branch piece on both sides', () => {
+    const copies = PRINT_PARTS.reduce((n, p) => n + p.view.length, 0);
+    assert.equal(copies, 20);
+    for (const p of PRINT_PARTS.filter((q) => q.file.includes('branch'))) {
+      assert.equal(p.view.filter((v) => v.mirror).length * 2, p.view.length, `${p.file}: left = right`);
+    }
   });
 
   for (const part of PRINT_PARTS) {
@@ -37,10 +47,8 @@ describe('print parts', () => {
         assert.ok(Math.abs(z0) < 1e-3, `a body starts at z = ${z0}, not on the bed`);
       }
       const [x, y, z] = s.size;
-      assert.ok(
-        Math.max(x, y) <= BED.x && Math.min(x, y) <= BED.y && z <= BED.z,
-        `size ${s.size.map((v) => v.toFixed(1)).join('×')} exceeds the bed`,
-      );
+      const flat = Math.max(x, y) <= BED.xy || (x + y) / Math.SQRT2 <= BED.xy;
+      assert.ok(flat && z <= BED.z, `size ${s.size.map((v) => v.toFixed(1)).join('×')} exceeds the bed`);
     });
   }
 

@@ -18,10 +18,12 @@ src/
   site.ts         CLI: GitHub Pages site — /, /ru/, /he/, sitemap, preview image
   seo.ts          per-language pages, hreflang, Open Graph, schema.org, sitemap
   zip.ts crc32.ts minimal deterministic ZIP writer
-  tools/          review, render, compare-stl, check-standalone, docs, poster
+  tools/          review, render, compare-stl, check-standalone, docs, poster,
+                  readme-image (chrome.ts: headless Chrome screenshots)
 web/              site: index.html, styles.css, src/ (i18n, themes, viewer, gallery)
 test/             node:test suites
 root-docs/        README sources in three languages (polydoc)
+docs/             README header image (npm run readme-image)
 ```
 
 >>>>> lang=en

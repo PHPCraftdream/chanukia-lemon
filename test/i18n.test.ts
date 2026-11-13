@@ -7,7 +7,8 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
-import { en, he, ru } from '../web/src/dict.ts';
+import { PRINT_PARTS } from '../src/assembly.ts';
+import { en, he, ru, partKey } from '../web/src/dict.ts';
 import type { Dict } from '../web/src/dict.ts';
 
 const LANGS: Record<string, Dict> = { en, ru, he };
@@ -47,6 +48,10 @@ describe('site translations', () => {
       }
     });
   }
+
+  it('every print file has a part label', () => {
+    for (const p of PRINT_PARTS) assert.ok(partKey(`${p.file}.stl`) in en, `${p.file}: ${partKey(p.file)}`);
+  });
 
   it('every key used in web/index.html exists', () => {
     const html = readFileSync(new URL('../web/index.html', import.meta.url), 'utf8');

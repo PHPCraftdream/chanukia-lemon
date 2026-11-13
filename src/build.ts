@@ -11,19 +11,20 @@
  *
  * @module
  */
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { gzipSync } from 'node:zlib';
 import { recoverAffine } from './affine.ts';
 import { PRINT_PARTS, fullAssembly } from './assembly.ts';
-import type { PrintPart } from './assembly.ts';
+import type { PrintPart, ViewInstance } from './assembly.ts';
 import { cleanup } from './geom.ts';
 import { OUT_DIR, SCENE_FILE } from './paths.ts';
 import { IDENTITY, MIRROR_X, encodeScene } from './scene-pack.ts';
-import type { MeshInput, PackedFile, PackedInstance } from './scene-pack.ts';
+import type { Mat4, MeshInput, PackedFile, PackedInstance } from './scene-pack.ts';
 import { describe, meshOf, stats, writeStl } from './stl.ts';
 import type { Mesh } from './stl.ts';
 
+const isStl = (name: string): boolean => /^chabad_.+\.stl$/.test(name);
 const round1 = (v: number): number => Math.round(v * 10) / 10;
 
 /** Build one part, extract its meshes, free WASM memory. */
@@ -34,8 +35,17 @@ function buildPart(part: PrintPart): { world: Mesh; print: Mesh } {
   return meshes;
 }
 
+/** World matrix of a copy: mirror (left half), then shift. */
+function placement({ mirror, shift }: ViewInstance): Mat4 {
+  const m: Mat4 = [...(mirror ? MIRROR_X : IDENTITY)];
+  if (shift) [m[12], m[13], m[14]] = shift;
+  return m;
+}
+
 function main(outDir: string): void {
   mkdirSync(outDir, { recursive: true });
+  // files of parts that were renamed or merged must not reach the site
+  for (const f of readdirSync(outDir).filter(isStl)) rmSync(join(outDir, f));
   const meshes: MeshInput[] = [];
   const instances: PackedInstance[] = [];
   const files: PackedFile[] = [];
@@ -60,7 +70,7 @@ function main(outDir: string): void {
       instances.push({
         id: v.id,
         mesh,
-        matrix: v.mirror ? MIRROR_X : IDENTITY,
+        matrix: placement(v),
         color: part.color,
         printFile: `${part.file}.stl`,
         explode: v.explode,
