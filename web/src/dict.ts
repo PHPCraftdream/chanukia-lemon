@@ -48,8 +48,8 @@ export const en = {
   'hero.ctaPrint': 'How to print',
   'fact.lights': '8 lights + shamash',
   'fact.size': '545 × 180 × 414 mm',
-  'fact.parts': '14 parts + a fit test',
-  'fact.material': 'PETG · FDM',
+  'fact.parts': '20 parts + a fit test',
+  'fact.material': 'PETG + ASA · FDM',
   'viewer.loading': 'Loading the model…',
   'viewer.ready': '{parts} parts in the assembly',
   'viewer.error': 'Could not load the model: {message}',
@@ -70,13 +70,15 @@ export const en = {
   'files.full': 'The whole hanukkiah as one model, for viewing only:',
   'files.zip': 'Download everything (ZIP)',
   'files.zipNote': 'All STL files, instructions for the print shop in three languages and the licence.',
-  'part.stem_lower': 'Foot and lower stem',
-  'part.stem_upper': 'Upper stem with the shamash',
-  'part.branch1': 'Branch 1 (inner)',
-  'part.branch2': 'Branch 2',
-  'part.branch3': 'Branch 3',
-  'part.branch4a': 'Branch 4, inner half',
-  'part.branch4b': 'Branch 4, outer half',
+  'part.foot': 'Foot',
+  'part.stem_lower': 'Lower stem',
+  'part.stem_upper': 'Upper stem',
+  'part.shamash_cup': 'Shamash cup, heat-resistant plastic',
+  'part.branch1': 'Branch 1 (inner), heat-resistant plastic',
+  'part.branch2a': 'Branch 2, inner half',
+  'part.branch34a': 'Branches 3 and 4, inner half',
+  'part.branch23b': 'Branches 2 and 3, outer half with the cup, heat-resistant plastic',
+  'part.branch4b': 'Branch 4, outer half with the cup, heat-resistant plastic',
   'part.rod_pin': 'Stiffening rod, left half',
   'part.rod_socket': 'Stiffening rod, right half',
   'part.fit_test': 'Fit test — print first; checks the fits, not part of the hanukkiah',
@@ -85,12 +87,13 @@ export const en = {
   'print.lead': 'Settings for an FDM printer. Pass them to the print shop together with the files.',
   'print.c1.t': 'Fit test first',
   'print.c1.d':
-    'Print chabad_fit_test with the same printer and material. The plugs should go in firmly, ' +
+    'Print chabad_fit_test on the same printer in both plastics. The plugs should go in firmly, ' +
     'without play.',
-  'print.c2.t': 'PETG',
-  'print.c2.d': 'PETG withstands the warmth of tea lights better than PLA (about 75 °C against 60 °C).',
-  'print.c3.t': 'Bed from 300 mm',
-  'print.c3.d': 'The longest branch is 298 mm. The rods fit diagonally on a 256 mm bed.',
+  'print.c2.t': 'PETG + heat-resistant',
+  'print.c2.d':
+    'Stem and inner branch halves in PETG; the parts with cups in ASA, ABS or PC — they sit next to the flames.',
+  'print.c3.t': 'Bed from 256 mm',
+  'print.c3.d': 'Branch pieces are at most 211 mm. The 272 mm rods fit diagonally on a 256 mm bed.',
   'print.c4.t': 'Walls and infill',
   'print.c4.d':
     'Stem: 4 perimeters, gyroid 12–15 %. Branches: 4–5 perimeters, gyroid 25–30 %. ' +
@@ -98,19 +101,20 @@ export const en = {
   'print.c5.t': 'Fine layers',
   'print.c5.d': '0.12–0.16 mm layers keep the wreaths, leaves and flame veins crisp.',
   'print.c6.t': 'Supports',
-  'print.c6.d': 'Branches print lying down with supports; the upper stem prints with a brim.',
+  'print.c6.d': 'Branches print lying down with supports; the stem pieces stand upright with a brim.',
   'asm.badge': 'Assembly',
   'asm.title': 'Assembly in four steps',
   'asm.s1.t': 'Stem',
-  'asm.s1.d': 'Join the two stem halves on their pins and glue the joint.',
+  'asm.s1.d':
+    'Join the foot, the lower stem, the upper stem and the shamash cup on their pins and glue the joints.',
   'asm.s2.t': 'Branches',
   'asm.s2.d':
-    'Insert the branches from the stem outwards: 1, 2, 3, then the long one, assembled from two halves.',
+    'Insert the branches from the stem outwards: 1, the inner halves of 2–4, then the outer halves with the cups. Glue every joint.',
   'asm.s3.t': 'Stiffening rod',
   'asm.s3.d':
-    'Slide the two rod halves through the cups from both sides until the joint inside the stem snaps.',
+    'Slide the two rod halves through the top knops under the cups from both sides until the joint inside the stem snaps.',
   'asm.s4.t': 'Glue',
-  'asm.s4.d': 'Put a drop of epoxy or CA glue into every rod hole in the cups from the back.',
+  'asm.s4.d': 'Put a drop of epoxy or CA glue into every rod hole in the top knops from the back.',
   'safety.title': 'Safety',
   'safety.text':
     'Use tea lights only in their aluminium cups and never leave burning candles unattended. ' +
@@ -124,6 +128,10 @@ export const en = {
 
 export type Key = keyof typeof en;
 export type Dict = Record<Key, string>;
+
+/** Label key of a print file: `chabad_branch34a_inner_x4.stl` -> `part.branch34a`. */
+export const partKey = (file: string): Key =>
+  `part.${file.replace(/^chabad_|\.stl$/g, '').replace(/(_inner|_outer)?_x\d+$/, '')}` as Key;
 
 export const ru: Dict = {
   'meta.title': 'Chanukia Lemon — ханукия для чайных свечей для 3D-печати',
@@ -165,8 +173,8 @@ export const ru: Dict = {
   'hero.ctaPrint': 'Как печатать',
   'fact.lights': '8 свечей + шамаш',
   'fact.size': '545 × 180 × 414 мм',
-  'fact.parts': '14 деталей + тестовый образец',
-  'fact.material': 'PETG · FDM',
+  'fact.parts': '20 деталей + тестовый образец',
+  'fact.material': 'PETG + ASA · FDM',
   'viewer.loading': 'Загружаю модель…',
   'viewer.ready': 'Деталей в сборке: {parts}',
   'viewer.error': 'Не удалось загрузить модель: {message}',
@@ -187,13 +195,15 @@ export const ru: Dict = {
   'files.full': 'Вся ханукия одной моделью, только для просмотра:',
   'files.zip': 'Скачать всё (ZIP)',
   'files.zipNote': 'Все STL, инструкция для мастерской на трёх языках и лицензия.',
-  'part.stem_lower': 'Ножка и низ ствола',
-  'part.stem_upper': 'Верх ствола с шамашем',
-  'part.branch1': 'Ветвь 1 (внутренняя)',
-  'part.branch2': 'Ветвь 2',
-  'part.branch3': 'Ветвь 3',
-  'part.branch4a': 'Ветвь 4, внутренняя половина',
-  'part.branch4b': 'Ветвь 4, внешняя половина',
+  'part.foot': 'Подставка (ножка)',
+  'part.stem_lower': 'Низ ствола',
+  'part.stem_upper': 'Верх ствола',
+  'part.shamash_cup': 'Чаша шамаша, термостойкий пластик',
+  'part.branch1': 'Ветвь 1 (внутренняя), термостойкий пластик',
+  'part.branch2a': 'Ветвь 2, внутренняя половина',
+  'part.branch34a': 'Ветви 3 и 4, внутренняя половина',
+  'part.branch23b': 'Ветви 2 и 3, внешняя половина с чашей, термостойкий пластик',
+  'part.branch4b': 'Ветвь 4, внешняя половина с чашей, термостойкий пластик',
   'part.rod_pin': 'Стержень жёсткости, левая половина',
   'part.rod_socket': 'Стержень жёсткости, правая половина',
   'part.fit_test': 'Тестовый образец — печатать первым; проверка посадок, к ханукии не крепится',
@@ -202,12 +212,13 @@ export const ru: Dict = {
   'print.lead': 'Настройки для FDM-принтера. Передайте их в мастерскую вместе с файлами.',
   'print.c1.t': 'Сначала тест посадки',
   'print.c1.d':
-    'Напечатайте chabad_fit_test на том же принтере и тем же пластиком. Штыри должны входить ' +
+    'Напечатайте chabad_fit_test на том же принтере из обоих пластиков. Штыри должны входить ' +
     'плотно, без люфта.',
-  'print.c2.t': 'PETG',
-  'print.c2.d': 'PETG лучше PLA держит тепло чайных свечей (около 75 °C против 60 °C).',
-  'print.c3.t': 'Стол от 300 мм',
-  'print.c3.d': 'Самая длинная ветвь — 298 мм. Стержни встают на стол 256 мм по диагонали.',
+  'print.c2.t': 'PETG + термостойкий',
+  'print.c2.d':
+    'Ствол и внутренние половины ветвей — PETG; детали с чашами — ASA, ABS или PC: они рядом с огнём.',
+  'print.c3.t': 'Стол от 256 мм',
+  'print.c3.d': 'Части ветвей — до 211 мм. Стержни 272 мм встают на стол 256 мм по диагонали.',
   'print.c4.t': 'Стенки и заполнение',
   'print.c4.d':
     'Ствол: 4 периметра, гироид 12–15 %. Ветви: 4–5 периметров, гироид 25–30 %. ' +
@@ -215,17 +226,20 @@ export const ru: Dict = {
   'print.c5.t': 'Тонкий слой',
   'print.c5.d': 'Слой 0,12–0,16 мм сохранит чёткость венков, листьев и прожилок пламени.',
   'print.c6.t': 'Поддержки',
-  'print.c6.d': 'Ветви печатаются лёжа с поддержками, верх ствола — с полями (brim).',
+  'print.c6.d': 'Ветви печатаются лёжа с поддержками, части ствола — стоя, с полями (brim).',
   'asm.badge': 'Сборка',
   'asm.title': 'Сборка в четыре шага',
   'asm.s1.t': 'Ствол',
-  'asm.s1.d': 'Соедините половины ствола на штырях и проклейте стык.',
+  'asm.s1.d': 'Соедините подставку, низ ствола, верх ствола и чашу шамаша на штырях и проклейте стыки.',
   'asm.s2.t': 'Ветви',
-  'asm.s2.d': 'Вставьте ветви от ствола наружу: 1, 2, 3, затем длинную, собранную из двух половин.',
+  'asm.s2.d':
+    'Вставьте ветви от ствола наружу: 1, внутренние половины 2–4, затем внешние половины с чашами. Каждый стык проклейте.',
   'asm.s3.t': 'Стержень жёсткости',
-  'asm.s3.d': 'Продвиньте половины стержня через чаши с двух сторон до защёлкивания стыка в стволе.',
+  'asm.s3.d':
+    'Продвиньте половины стержня через верхние завязи под чашами с двух сторон до защёлкивания стыка в стволе.',
   'asm.s4.t': 'Клей',
-  'asm.s4.d': 'Капните эпоксидку или цианоакрилат в каждое отверстие стержня в чашах с тыльной стороны.',
+  'asm.s4.d':
+    'Капните эпоксидку или цианоакрилат в каждое отверстие стержня в верхних завязях с тыльной стороны.',
   'safety.title': 'Безопасность',
   'safety.text':
     'Используйте чайные свечи только в алюминиевых гильзах и не оставляйте горящие свечи без ' +
@@ -276,8 +290,8 @@ export const he: Dict = {
   'hero.ctaPrint': 'איך מדפיסים',
   'fact.lights': '8 נרות + שמש',
   'fact.size': '\u2066545 × 180 × 414\u2069 מ״מ', // LRI…PDI keep the numbers left-to-right
-  'fact.parts': '14 חלקים + דגם בדיקה',
-  'fact.material': 'PETG · FDM',
+  'fact.parts': '20 חלקים + דגם בדיקה',
+  'fact.material': 'PETG + ASA · FDM',
   'viewer.loading': 'טוען את המודל…',
   'viewer.ready': 'חלקים בהרכבה: {parts}',
   'viewer.error': 'לא ניתן לטעון את המודל: {message}',
@@ -298,13 +312,15 @@ export const he: Dict = {
   'files.full': 'החנוכייה כולה כמודל אחד, לצפייה בלבד:',
   'files.zip': 'הורדת הכול (ZIP)',
   'files.zipNote': 'כל קובצי ה־STL, הוראות לבית הדפוס בשלוש שפות והרישיון.',
-  'part.stem_lower': 'בסיס וחלק תחתון של הגזע',
-  'part.stem_upper': 'חלק עליון של הגזע עם השמש',
-  'part.branch1': 'קנה 1 (פנימי)',
-  'part.branch2': 'קנה 2',
-  'part.branch3': 'קנה 3',
-  'part.branch4a': 'קנה 4, חצי פנימי',
-  'part.branch4b': 'קנה 4, חצי חיצוני',
+  'part.foot': 'בסיס',
+  'part.stem_lower': 'חלק תחתון של הגזע',
+  'part.stem_upper': 'חלק עליון של הגזע',
+  'part.shamash_cup': 'גביע השמש, פלסטיק עמיד בחום',
+  'part.branch1': 'קנה 1 (פנימי), פלסטיק עמיד בחום',
+  'part.branch2a': 'קנה 2, חצי פנימי',
+  'part.branch34a': 'קנים 3 ו־4, חצי פנימי',
+  'part.branch23b': 'קנים 2 ו־3, חצי חיצוני עם הגביע, פלסטיק עמיד בחום',
+  'part.branch4b': 'קנה 4, חצי חיצוני עם הגביע, פלסטיק עמיד בחום',
   'part.rod_pin': 'מוט חיזוק, חצי שמאלי',
   'part.rod_socket': 'מוט חיזוק, חצי ימני',
   'part.fit_test': 'דגם בדיקה — להדפיס ראשון; בודק את ההתאמות, אינו חלק מהחנוכייה',
@@ -312,28 +328,30 @@ export const he: Dict = {
   'print.title': 'איך מדפיסים',
   'print.lead': 'הגדרות למדפסת FDM. מסרו אותן לבית הדפוס יחד עם הקבצים.',
   'print.c1.t': 'קודם בדיקת התאמה',
-  'print.c1.d': 'הדפיסו את chabad_fit_test באותה מדפסת ובאותו חומר. הפינים צריכים להיכנס בחוזקה, ללא משחק.',
-  'print.c2.t': 'PETG',
-  'print.c2.d': 'PETG עמיד לחום של נרות טי־לייט יותר מ־PLA (כ־75 °C לעומת 60 °C).',
-  'print.c3.t': 'משטח מ־300 מ״מ',
-  'print.c3.d': 'הקנה הארוך ביותר — 298 מ״מ. המוטות נכנסים באלכסון על משטח של 256 מ״מ.',
+  'print.c1.d': 'הדפיסו את chabad_fit_test באותה מדפסת משני החומרים. הפינים צריכים להיכנס בחוזקה, ללא משחק.',
+  'print.c2.t': 'PETG + עמיד בחום',
+  'print.c2.d': 'הגזע והחצאים הפנימיים של הקנים — PETG; החלקים עם הגביעים — ASA,‏ ABS או PC: הם קרובים לאש.',
+  'print.c3.t': 'משטח מ־256 מ״מ',
+  'print.c3.d': 'חלקי הקנים — עד 211 מ״מ. המוטות של 272 מ״מ נכנסים באלכסון על משטח של 256 מ״מ.',
   'print.c4.t': 'דפנות ומילוי',
   'print.c4.d':
     'גזע: 4 היקפים, ג׳ירואיד 12–15 %. קנים: 4–5 היקפים, ג׳ירואיד 25–30 %. ' + 'פינים ומוטות: מלאים.',
   'print.c5.t': 'שכבה דקה',
   'print.c5.d': 'שכבה של 0.12–0.16 מ״מ שומרת על חדות הזרים, העלים והעורקים בלהבות.',
   'print.c6.t': 'תמיכות',
-  'print.c6.d': 'הקנים מודפסים בשכיבה עם תמיכות; החלק העליון של הגזע — עם שוליים (brim).',
+  'print.c6.d': 'הקנים מודפסים בשכיבה עם תמיכות; חלקי הגזע — זקופים, עם שוליים (brim).',
   'asm.badge': 'הרכבה',
   'asm.title': 'הרכבה בארבעה שלבים',
   'asm.s1.t': 'גזע',
-  'asm.s1.d': 'חברו את שני חצאי הגזע על הפינים והדביקו את החיבור.',
+  'asm.s1.d': 'חברו את הבסיס, החלק התחתון, החלק העליון וגביע השמש על הפינים והדביקו את החיבורים.',
   'asm.s2.t': 'קנים',
-  'asm.s2.d': 'הכניסו את הקנים מהגזע החוצה: 1, 2, 3 ואחר כך הארוך, המורכב משני חצאים.',
+  'asm.s2.d':
+    'הכניסו את הקנים מהגזע החוצה: 1, החצאים הפנימיים של 2–4, ואחר כך החצאים החיצוניים עם הגביעים. הדביקו כל חיבור.',
   'asm.s3.t': 'מוט חיזוק',
-  'asm.s3.d': 'החליקו את שני חצאי המוט דרך הגביעים משני הצדדים עד שהחיבור בתוך הגזע ננעל.',
+  'asm.s3.d':
+    'החליקו את שני חצאי המוט דרך הכפתורים העליונים שמתחת לגביעים משני הצדדים עד שהחיבור בתוך הגזע ננעל.',
   'asm.s4.t': 'הדבקה',
-  'asm.s4.d': 'טפטפו אפוקסי או דבק מגע לכל חור של המוט בגביעים מהצד האחורי.',
+  'asm.s4.d': 'טפטפו אפוקסי או דבק מגע לכל חור של המוט בכפתורים העליונים מהצד האחורי.',
   'safety.title': 'בטיחות',
   'safety.text':
     'השתמשו בנרות טי־לייט רק בתוך גביעי האלומיניום שלהם ולעולם אל תשאירו נרות דולקים ללא השגחה. ' +

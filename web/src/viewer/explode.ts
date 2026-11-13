@@ -2,7 +2,7 @@
 // Chanukia Lemon by PHPCraftdream — https://github.com/PHPCraftdream/chanukia-lemon
 /**
  * Staged exploded view, in the real disassembly order: first only the stiffening rod
- * halves slide out of the cups (everything else stays put), then the rest comes apart.
+ * halves slide out of the top knops (everything else stays put), then the rest comes apart.
  *
  * @module
  */

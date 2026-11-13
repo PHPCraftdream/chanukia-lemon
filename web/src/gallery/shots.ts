@@ -34,6 +34,6 @@ export const SHOTS: readonly Shot[] = [
   { key: 'shot.knop', position: [150, -200, 235], target: [110, 0, 195], fov: 30 },
   { key: 'shot.junction', position: [70, -190, 260], target: [0, 0, 214], fov: 30 },
   { key: 'shot.shamash', position: [80, -210, 470], target: [0, 0, 392], fov: 28 },
-  { key: 'shot.flames', position: [60, -230, 345], target: [0, 0, 330], fov: 30 },
-  { key: 'shot.exploded', position: [640, -1380, 860], target: [0, 0, 300], fov: 30, explode: 1 },
+  { key: 'shot.flames', position: [60, -230, 75], target: [0, 0, 55], fov: 30 },
+  { key: 'shot.exploded', position: [760, -1500, 950], target: [60, 0, 310], fov: 30, explode: 1 },
 ];

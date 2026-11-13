@@ -8,8 +8,9 @@
  */
 import * as THREE from 'three';
 import type { PackedFile } from '../../src/scene-pack.ts';
+import { partKey } from './dict.ts';
 import { LANGS, applyLang, initialLang, t } from './i18n.ts';
-import type { Key, Lang } from './i18n.ts';
+import type { Lang } from './i18n.ts';
 import { applyTheme, currentTheme, initialTheme, nextTheme } from './theme.ts';
 import { setupGallery } from './gallery/gallery.ts';
 import type { Gallery } from './gallery/gallery.ts';
@@ -39,10 +40,6 @@ const setWireframe =
   (p: Placed<unknown>): void => {
     p.mesh.material.wireframe = on;
   };
-
-/** `chabad_branch4a_inner_x2.stl` -> `part.branch4a`. */
-const partKey = (file: string): Key =>
-  `part.${file.replace(/^chabad_|\.stl$/g, '').replace(/(_inner|_outer)?_x\d$/, '')}` as Key;
 
 /** Numbers keep their left-to-right order inside right-to-left text. */
 const ltr = (text: string): string => `<bdi dir="ltr">${text}</bdi>`;

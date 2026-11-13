@@ -84,7 +84,7 @@ export const T_SOCK1 = 14.4;
 export const ROD_R = 4.0;
 /** Rod hole in the stem: slip fit, the datum of the rod line. */
 export const ROD_HOLE_R = 4.15;
-/** Rod holes in the cups: oversized to absorb print/shrink errors, glued after assembly. */
+/** Rod holes in the top knops of the branches: oversized to absorb print/shrink errors, glued after assembly. */
 export const ROD_HOLE_BR_R = 4.75;
 /** D-profile flat on top of the rod (keys rotation, prints flat side down). */
 export const ROD_FLAT = 3.2;
@@ -134,9 +134,11 @@ export const VEIN_D = 0.4;
 export const Z_CUP = Z_J0 + BRANCHES * PITCH + STEM_OFFSET + 4.0;
 /** Shamash cup base height. */
 export const Z_SHAMASH = Z_CUP + SHAMASH_LIFT;
-/** Rod axis height (fully inside the under-cones). */
-export const Z_ROD = Z_CUP - 5.0;
+/** Top knop of a branch: distance back from the branch end (along its axis), under the cup axis. */
+export const TOP_KNOP_BACK = 16.0;
+/** Rod axis height: through the centres of the top knops (and the top stem bulb). */
+export const Z_ROD = Z_CUP - 4.0 - TOP_KNOP_BACK / Math.SQRT2;
 /** Cup axis offset from the branch end, so the cup sits over the top knop. */
-export const CUP_SHIFT = 16 / Math.SQRT2;
-/** Rod half-length before the flush trim at the outer cone. */
+export const CUP_SHIFT = TOP_KNOP_BACK / Math.SQRT2;
+/** Rod half-length before the flush trim at the outer top knop. */
 export const X_ROD = BRANCHES * PITCH + STEM_OFFSET + 16.0;

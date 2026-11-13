@@ -105,7 +105,7 @@ function sheets(): Sheet[] {
   ];
   const cupsItems: Item[] = [...br.map(asBranchItem), [rodR, ROD_RGB]];
   const centreBox: [Vec3, Vec3] = [
-    [-110, -40, Z_CUP - 30],
+    [-110, -40, Z_CUP - 40],
     [110, 40, Z_SHAMASH + 30],
   ];
   const centreItems: Item[] = [

@@ -14,7 +14,7 @@ Website (3D model, latest files) and source code on GitHub:
 
 <<<<< include=links
 
-The assembled hanukkiah is 545 × 180 × 414 mm and has 14 parts plus a small fit test.
+The assembled hanukkiah is 545 × 180 × 414 mm and has 20 parts plus a small fit test.
 
 >>>>> lang=ru
 # Chanukia Lemon — инструкция для мастерской
@@ -28,7 +28,7 @@ The assembled hanukkiah is 545 × 180 × 414 mm and has 14 parts plus a small fi
 
 <<<<< include=links
 
-Собранная ханукия — 545 × 180 × 414 мм, 14 деталей и маленький тестовый образец.
+Собранная ханукия — 545 × 180 × 414 мм, 20 деталей и маленький тестовый образец.
 
 >>>>> lang=he
 # Chanukia Lemon — הוראות לבית הדפוס
@@ -42,5 +42,5 @@ The assembled hanukkiah is 545 × 180 × 414 mm and has 14 parts plus a small fi
 
 <<<<< include=links
 
-החנוכייה המורכבת היא 545 × 180 × 414 מ״מ, 14 חלקים ועוד דגם בדיקה קטן.
+החנוכייה המורכבת היא 545 × 180 × 414 מ״מ, 20 חלקים ועוד דגם בדיקה קטן.
 

@@ -30,59 +30,66 @@ npm test
 `out_chabad/hanukia.html` is the whole site in one file: it opens with a double click,
 without a server or internet access (code and models are embedded, about 6 MB).
 
-| Command                | What it does                                                    |
-| ---------------------- | --------------------------------------------------------------- |
-| `npm run build`        | `build:stl` + `build:site`                                      |
-| `npm run build:stl`    | parts → STL in `out_chabad/` + the scene package for the site   |
-| `npm run build:site`   | site bundle (rspack) → `out_chabad/hanukia.html` + its check    |
-| `npm run site`         | site dev server on http://localhost:5173                        |
-| `npm test`             | tests (`node:test`): layout, formats, parts, fits, translations |
-| `npm run review`       | assembly review: contacts, clearances, insertion paths          |
-| `npm run render`       | inspection PNGs (close-ups and sections) → `out_chabad/inspect/` |
-| `npm run docs`         | rebuild the README in three languages from `root-docs/`         |
-| `npm run typecheck`    | type checks (Node code and the site)                            |
+| Command                | What it does                                                                   |
+| ---------------------- | ------------------------------------------------------------------------------ |
+| `npm run build`        | `build:stl` + `build:site`                                                     |
+| `npm run build:stl`    | parts → STL in `out_chabad/` + the scene package for the site                  |
+| `npm run build:site`   | site bundle (rspack) → `out_chabad/hanukia.html` + its check                   |
+| `npm run site`         | site dev server on http://localhost:5173                                       |
+| `npm test`             | tests (`node:test`): layout, formats, parts, fits, exploded view, translations |
+| `npm run review`       | assembly review: contacts, clearances, insertion paths                         |
+| `npm run render`       | inspection PNGs (close-ups and sections) → `out_chabad/inspect/`               |
+| `npm run docs`         | rebuild the README in three languages from `root-docs/`                        |
+| `npm run readme-image` | README header image → `docs/` (after a build, needs Chrome)                    |
+| `npm run typecheck`    | type checks (Node code and the site)                                           |
 
 ## Files for the print shop
 
 All `chabad_*.stl` from `out_chabad/` (also downloadable from the website), except
 `chabad_full.stl`, which is the whole hanukkiah as one model for viewing only.
 
-| File                           | Qty | Note                                        |
-| ------------------------------ | --: | ------------------------------------------- |
-| `chabad_fit_test.stl`          |   1 | **print first**: checks the fits            |
-| `chabad_stem_lower.stl`        |   1 | foot and lower stem                         |
-| `chabad_stem_upper.stl`        |   1 | upper stem with the shamash                 |
-| `chabad_branch1_x2.stl` … `3`  |   2 | branches (left and right are identical)     |
-| `chabad_branch4a_inner_x2.stl` |   2 | long branch, inner half                     |
-| `chabad_branch4b_outer_x2.stl` |   2 | long branch, outer half                     |
-| `chabad_rod_pin_x1.stl`        |   1 | left half of the stiffening rod (with pin)  |
-| `chabad_rod_socket_x1.stl`     |   1 | right half of the rod (with socket)         |
+| File                            | Qty | Note                                                               |
+| ------------------------------- | --: | ------------------------------------------------------------------ |
+| `chabad_fit_test.stl`           |   1 | **print first**: checks the fits                                   |
+| `chabad_foot.stl`               |   1 | foot                                                               |
+| `chabad_stem_lower.stl`         |   1 | lower stem                                                         |
+| `chabad_stem_upper.stl`         |   1 | upper stem                                                         |
+| `chabad_shamash_cup.stl`        |   1 | shamash cup — heat-resistant plastic                               |
+| `chabad_branch1_x2.stl`         |   2 | branch 1 — heat-resistant plastic                                  |
+| `chabad_branch2a_inner_x2.stl`  |   2 | branch 2, inner half                                               |
+| `chabad_branch34a_inner_x4.stl` |   4 | branches 3 and 4, inner half                                       |
+| `chabad_branch23b_outer_x4.stl` |   4 | branches 2 and 3, outer half with the cup — heat-resistant plastic |
+| `chabad_branch4b_outer_x2.stl`  |   2 | branch 4, outer half with the cup — heat-resistant plastic         |
+| `chabad_rod_pin_x1.stl`         |   1 | left half of the stiffening rod (with pin)                         |
+| `chabad_rod_socket_x1.stl`      |   1 | right half of the rod (with socket)                                |
 
 ## Printing
 
-FDM, PETG. Recommended settings:
+FDM: PETG, and a heat-resistant plastic (ASA, ABS or PC) for the parts with cups — the
+shamash cup, branch 1 and the outer branch halves. Recommended settings:
 
-- bed of at least 300 mm (the longest branch is 298 mm; the rods fit diagonally on 256 mm);
+- bed of at least 256 mm (the 272 mm rods fit diagonally; branch pieces are at most 211 mm);
 - stem and foot: 4 perimeters, gyroid infill 12–15 %;
 - branches: 4–5 perimeters, gyroid infill 25–30 %;
 - rods, tenons and pins: solid;
 - layer 0.12–0.16 mm to keep the reliefs crisp;
-- branches print with supports, the upper stem with a brim.
+- branches print with supports, the stem pieces upright with a brim.
 
 Use tea lights only in their aluminium cups and never leave a lit hanukkiah unattended.
 
 ## Assembly
 
-1. Join the stem halves (pins with crush ribs) and glue the joint.
-2. Insert the branches **from the stem outwards**: 1, 2, 3, then the long one (assemble it
-   from its two halves first). Each branch slides in along its own axis: the tenon into the
-   socket, the tube into the recess of the knob.
-3. Push the two rod halves through the holes in the cups from both sides until the "jack"
-   inside the stem snaps in.
-4. Put a drop of glue (epoxy or CA) into every rod hole in the cups from the back.
+1. Join the four stem pieces — foot, lower stem, upper stem, shamash cup (pins with crush
+   ribs) — and glue the joints.
+2. Insert the branches **from the stem outwards**: 1, then the inner halves of 2, 3 and 4,
+   then put the outer halves with the cups onto them. Each piece slides in along its own
+   axis: the tenon into the socket, the tube into the recess of the knob. Glue every joint.
+3. Push the two rod halves through the top knops under the cups from both sides until the
+   "jack" inside the stem snaps in.
+4. Put a drop of glue (epoxy or CA) into every rod hole in the top knops from the back.
 
 Fits: 0.15 mm clearance per side on the body of a part; the crush ribs give about 0.1 mm
-of interference. The rod holes in the cups are oversized (0.75 mm clearance) to absorb print
+of interference. The rod holes in the knops are oversized (0.75 mm clearance) to absorb print
 errors and shrinkage; the precise hole in the stem sets the rod line. If the fit test is too
 tight or too loose, adjust `SOCKET_R`, `ROD_HOLE_R` and the rib heights `*_RIB_H` in
 `src/params.ts` and rebuild.
@@ -123,10 +130,12 @@ src/
   site.ts         CLI: GitHub Pages site — /, /ru/, /he/, sitemap, preview image
   seo.ts          per-language pages, hreflang, Open Graph, schema.org, sitemap
   zip.ts crc32.ts minimal deterministic ZIP writer
-  tools/          review, render, compare-stl, check-standalone, docs, poster
+  tools/          review, render, compare-stl, check-standalone, docs, poster,
+                  readme-image (chrome.ts: headless Chrome screenshots)
 web/              site: index.html, styles.css, src/ (i18n, themes, viewer, gallery)
 test/             node:test suites
 root-docs/        README sources in three languages (polydoc)
+docs/             README header image (npm run readme-image)
 ```
 
 Coordinates: Z up, the stem axis is Z, branches lie in the XZ plane (+X is the right half),
