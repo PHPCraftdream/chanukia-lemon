@@ -75,6 +75,8 @@ function main(outDir: string): void {
         printFile: `${part.file}.stl`,
         explode: v.explode,
         ...(v.slide ? { slide: v.slide } : {}),
+        ...(v.path ? { path: v.path } : {}),
+        ...(v.split ? { split: v.split } : {}),
       });
     }
   }

@@ -43,8 +43,12 @@ export interface PackedInstance {
   printFile: string;
   /** Direction for the second stage of the exploded view. */
   explode: [number, number, number];
-  /** First-stage movement, mm (the rod halves sliding out); absent = stays put. */
+  /** First-stage movement, mm (the rod sliding out); absent = stays put. */
   slide?: [number, number, number];
+  /** Second-stage waypoints, mm, passed in order instead of the explode direction (the rod). */
+  path?: [number, number, number][];
+  /** Third-stage movement, mm (the rod halves parting); absent = stays put. */
+  split?: [number, number, number];
 }
 
 /** A file for the print shop. */

@@ -7,12 +7,16 @@
  */
 import { Manifold, box, cyl, union } from './geom.ts';
 import type { Vec2 } from './geom.ts';
-import { PIN_L, RIB_R, ROD_FLAT, ROD_HOLE_R, ROD_R, Z_ROD } from './params.ts';
+import { FIT_CLEARANCE, PIN_L, PIN_TIP_ROOM, RIB_R, ROD_FLAT, ROD_HOLE_R, ROD_R, Z_ROD } from './params.ts';
 
 /** Segments of the thin rib cylinders. */
 const RIB_SEG = 24;
-/** Radial clearance of split-joint sockets. */
-const SPLIT_SOCKET_CLEARANCE = 0.15;
+/** Pin root sunk into its own part, so the union fuses, mm. */
+const PIN_ROOT = 0.5;
+/** Rib-free lead-in at the pin tip, mm. */
+const PIN_LEAD_IN = 2.0;
+/** The socket starts this far outside the joint face, for a clean cut, mm. */
+const SOCKET_OVERCUT = 0.5;
 /** Half-size of the boxes used to cut parts in two. */
 const HALF_SPACE = 1000;
 
@@ -52,28 +56,45 @@ export function rodHole(x0: number, length = 60, r = ROD_HOLE_R): Manifold {
 }
 
 /**
- * Cut a part at `z = z0`. The lower half gets ribbed pins pointing +Z at `pins`,
+ * Ribbed pin of a part lying at `z > 0`: sticks out of its face `z = 0`, tip at `z = -len`.
+ *
+ * @param r core radius
+ * @param h rib height
+ */
+export const jointPin = (r: number, h: number, len = PIN_L): Manifold =>
+  ribbed(-len, PIN_ROOT, r, h, PIN_LEAD_IN);
+
+/**
+ * Socket for a {@link jointPin} of core radius `r` in a part lying at `z > 0`, mouth on its
+ * face `z = 0`; always {@link PIN_L} + {@link PIN_TIP_ROOM} deep, whatever the pin length.
+ */
+export const jointSocket = (r: number): Manifold =>
+  cyl(-SOCKET_OVERCUT, PIN_L + PIN_TIP_ROOM, r + FIT_CLEARANCE);
+
+/** Pins of a split joint. */
+export interface SplitJoint {
+  /** XY of the pins on the cut. */
+  pins: readonly Vec2[];
+  /** Pin core radius. */
+  r: number;
+  /** Pin rib height. */
+  h: number;
+  /** Pin length, {@link PIN_L} by default. */
+  len?: number;
+}
+
+/**
+ * Cut a part at `z = z0`. The lower half gets the ribbed pins of `joint` pointing +Z,
  * the upper half gets matching sockets.
  *
- * @param pins XY of the pins
- * @param r pin core radius
- * @param h pin rib height
  * @returns `[lower, upper]`
  */
-export function splitZ(
-  m: Manifold,
-  z0: number,
-  pins: readonly Vec2[],
-  r: number,
-  h: number,
-): [Manifold, Manifold] {
+export function splitZ(m: Manifold, z0: number, joint: SplitJoint): [Manifold, Manifold] {
   const s = HALF_SPACE;
   const lower = m.intersect(box([-s, -s, z0 - 2 * s], [s, s, z0]));
   const upper = m.intersect(box([-s, -s, z0], [s, s, z0 + 2 * s]));
-  const pin = ribbed(-PIN_L, 0.5, r, h, 2.0).mirror([0, 0, 1]);
-  const socket = cyl(-0.5, PIN_L + 0.5, r + SPLIT_SOCKET_CLEARANCE);
-  return [
-    union([lower, ...pins.map(([x, y]) => pin.translate([x, y, z0]))]),
-    upper.subtract(union(pins.map(([x, y]) => socket.translate([x, y, z0])))),
-  ];
+  const pin = jointPin(joint.r, joint.h, joint.len).mirror([0, 0, 1]);
+  const socket = jointSocket(joint.r);
+  const at = (p: Manifold): Manifold[] => joint.pins.map(([x, y]) => p.translate([x, y, z0]));
+  return [union([lower, ...at(pin)]), upper.subtract(union(at(socket)))];
 }

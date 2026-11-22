@@ -64,8 +64,10 @@ export const JBULB_H = 20.0;
 export const SEG = 96;
 
 // ---------------------------------------------------------------- press fits
-// Ribbed fits: ribs crush ~0.1 mm, the core keeps ~0.15 mm radial clearance.
+// Ribbed fits: ribs crush ~0.1 mm, the core keeps FIT_CLEARANCE radial clearance.
 
+/** Radial clearance of every fit: sockets, the rod hole in the stem, D-flats, tube recesses. */
+export const FIT_CLEARANCE = 0.15;
 /** Radius of the crush-rib cross-section. */
 export const RIB_R = 0.5;
 /** Branch tenon core radius. */
@@ -73,7 +75,7 @@ export const TENON_R = 5.0;
 /** Branch tenon rib height. */
 export const TENON_RIB_H = 0.25;
 /** Stem socket radius for the tenon. */
-export const SOCKET_R = 5.15;
+export const SOCKET_R = TENON_R + FIT_CLEARANCE;
 /** Branch frame (distance along the branch axis from the stem axis): tenon start. */
 export const T_TENON0 = 7.0;
 /** Branch frame: tube start (sunk ~4 mm into the junction bulb). */
@@ -83,21 +85,19 @@ export const T_SOCK1 = 14.4;
 /** Stiffening rod radius. */
 export const ROD_R = 4.0;
 /** Rod hole in the stem: slip fit, the datum of the rod line. */
-export const ROD_HOLE_R = 4.15;
+export const ROD_HOLE_R = ROD_R + FIT_CLEARANCE;
 /** Rod holes in the top knops of the branches: oversized to absorb print/shrink errors, glued after assembly. */
 export const ROD_HOLE_BR_R = 4.75;
 /** D-profile flat on top of the rod (keys rotation, prints flat side down). */
 export const ROD_FLAT = 3.2;
-/** Clearance of the D-flat in the fit-test coupon. */
-export const FIT_D = 0.15;
 /** Rod "jack" pin core radius. */
 export const PIN_R = 2.0;
 /** Rod "jack" pin rib height. */
 export const PIN_RIB_H = 0.25;
-/** Rod "jack" socket radius. */
-export const PIN_SOCKET_R = 2.15;
 /** Length of the rod "jack" pin and of the split-joint pins. */
 export const PIN_L = 10.0;
+/** Pin sockets are this much deeper than {@link PIN_L}: room under the pin tip. */
+export const PIN_TIP_ROOM = 0.5;
 /** Long-branch split joint: pin core radius. */
 export const KEY_R = 2.5;
 /** Long-branch split joint: pin rib height. */
@@ -106,6 +106,8 @@ export const KEY_RIB_H = 0.25;
 export const STEM_PIN_R = 2.5;
 /** Stem split joint: pin rib height. */
 export const STEM_PIN_RIB_H = 0.25;
+/** Foot pins: shorter than {@link PIN_L}, room for a sagging socket roof. */
+export const FOOT_PIN_L = 8.5;
 
 // ---------------------------------------------------------------- decoration
 

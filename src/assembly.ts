@@ -20,6 +20,7 @@ import {
   isSplitBranch,
   junctionZ,
 } from './layout.ts';
+import { memo } from './memo.ts';
 import { X_ROD } from './params.ts';
 import { branchHalves, branchWorld, layBranch } from './parts/branch.ts';
 import { fitTest } from './parts/fit-test.ts';
@@ -39,6 +40,10 @@ export interface ViewInstance {
    * the stiffening rod halves slide out of the top knops along their axis.
    */
   slide?: Vec3;
+  /** Waypoints (mm) of the second stage, passed in order instead of {@link explode}. */
+  path?: Vec3[];
+  /** Movement (mm) in the third stage, after everything else has come apart. */
+  split?: Vec3;
   /** Offset of this copy from the built part (mm, applied after mirroring). */
   shift?: Vec3;
 }
@@ -60,8 +65,8 @@ export interface PrintPart {
 }
 
 const S = Math.SQRT1_2;
-/** How far a rod half slides out to clear every knop (mm): its own length plus a margin. */
-const ROD_PULL = X_ROD + 20;
+/** How far the joined rod slides out to one side to clear every knop (mm): its length plus a margin. */
+const ROD_PULL = 2 * X_ROD + 20;
 const COLOR = { stem: '#d6ad55', branch: '#cfa54c', rod: '#b48a3e', test: '#9a9a9a' } as const;
 const asIs = (m: Manifold): Manifold => m;
 
@@ -69,9 +74,22 @@ const asIs = (m: Manifold): Manifold => m;
 const FOOT_DROP = 0.4;
 /** Exploded view: rise of the upper stem (the shamash cup rises twice as far). */
 const STEM_UPPER_LIFT = 0.6;
-/** Exploded view: rise and outward drift of the rod halves, enough to clear the outer cups moving out. */
-const ROD_LIFT = 3.0;
-const ROD_DRIFT = 0.5;
+/** Exploded view: rise of the joined rod over everything that comes apart, mm. */
+const ROD_RISE = 260;
+/** Exploded view: how far each rod half moves off the jack pin at the end, mm. */
+const ROD_PART = 40;
+/** Exploded view of a rod half: out to the right, up, back over the hanukkiah, then apart. */
+const rodView = (id: string, side: number): ViewInstance => ({
+  id,
+  mirror: false,
+  slide: [ROD_PULL, 0, 0],
+  explode: [0, 0, 0],
+  path: [
+    [0, 0, ROD_RISE],
+    [-ROD_PULL, 0, ROD_RISE],
+  ],
+  split: [side * ROD_PART, 0, 0],
+});
 /** Extra explode distance of the outer half of a split branch, so the joint opens up. */
 const OUTER_HALF_SPREAD = 1.6;
 
@@ -122,8 +140,10 @@ const halfLength = (j: number, h: number): string =>
 const noShift = (): Vec3 => [0, 0, 0];
 
 /** First split branch whose half `h` has the same shape as on branch `j`. */
-const halfSource = (j: number, h: number): number =>
-  SPLIT_BRANCHES.find((k) => halfLength(k, h) === halfLength(j, h)) ?? j;
+function halfSource(j: number, h: number): number {
+  const len = halfLength(j, h);
+  return SPLIT_BRANCHES.find((k) => halfLength(k, h) === len) ?? j;
+}
 
 /**
  * Offset (right half) that moves half `h` built on branch `first` onto branch `j`: to the
@@ -147,8 +167,10 @@ function branchParts(): PrintPart[] {
   );
   const halves = [0, 1].flatMap((h) => {
     const groups = new Map<string, number[]>();
-    for (const j of SPLIT_BRANCHES)
-      groups.set(halfLength(j, h), [...(groups.get(halfLength(j, h)) ?? []), j]);
+    for (const j of SPLIT_BRANCHES) {
+      const len = halfLength(j, h);
+      groups.set(len, [...(groups.get(len) ?? []), j]);
+    }
     return [...groups.values()].map((js) =>
       branchPart(
         `chabad_branch${js.join('')}${h === 0 ? 'a_inner' : 'b_outer'}`,
@@ -165,6 +187,9 @@ function branchParts(): PrintPart[] {
 /** Short names of the right-side pieces of branch `j` in {@link assembledParts}, inner first. */
 export const branchPieceNames = (j: number): string[] =>
   isSplitBranch(j) ? [`R${j}a`, `R${j}b`] : [`R${j}`];
+
+/** Left rod half (with the jack pin) in assembled position. */
+const leftRod = memo((): Manifold => mirrorX(rodHalf('pin')));
 
 /** Display branch (no rod hole). */
 const displayBranch = (j: number): Manifold => branchWorld(j);
@@ -208,9 +233,9 @@ export const PRINT_PARTS: readonly PrintPart[] = [
     file: 'chabad_rod_pin_x1',
     qty: 1,
     color: COLOR.rod,
-    world: () => mirrorX(rodHalf('pin')),
+    world: leftRod,
     print: layRod,
-    view: [{ id: 'rod_left', mirror: false, slide: [-ROD_PULL, 0, 0], explode: [-ROD_DRIFT, 0, ROD_LIFT] }],
+    view: [rodView('rod_left', -1)],
   },
   {
     file: 'chabad_rod_socket_x1',
@@ -218,7 +243,7 @@ export const PRINT_PARTS: readonly PrintPart[] = [
     color: COLOR.rod,
     world: () => rodHalf('socket'),
     print: layRod,
-    view: [{ id: 'rod_right', mirror: false, slide: [ROD_PULL, 0, 0], explode: [ROD_DRIFT, 0, ROD_LIFT] }],
+    view: [rodView('rod_right', 1)],
   },
   { file: 'chabad_fit_test', qty: 1, color: COLOR.test, world: fitTest, print: asIs, view: [] },
 ];
@@ -226,7 +251,8 @@ export const PRINT_PARTS: readonly PrintPart[] = [
 /** The assembled hanukkiah as one display solid (no sockets or holes). */
 export function fullAssembly(): Manifold {
   const branches = BRANCH_IDS.map(displayBranch);
-  return union([stem(), rodHalf('solid'), mirrorX(rodHalf('solid')), ...branches, ...branches.map(mirrorX)]);
+  const rod = rodHalf('solid');
+  return union([stem(), rod, mirrorX(rod), ...branches, ...branches.map(mirrorX)]);
 }
 
 /**
@@ -248,7 +274,7 @@ export function assembledParts(): Record<string, Manifold> {
       parts[name.replace(/^R/, 'L')] = mirrorX(pieces[i]);
     });
   }
-  parts.rod_L = mirrorX(rodHalf('pin'));
+  parts.rod_L = leftRod();
   parts.rod_R = rodHalf('socket');
   return parts;
 }

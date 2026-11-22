@@ -10,7 +10,8 @@
 import { box, cyl, union } from '../geom.ts';
 import type { Manifold } from '../geom.ts';
 import { flatCut, ribbed } from '../fits.ts';
-import { FIT_D, ROD_FLAT, ROD_HOLE_R, ROD_R, SOCKET_R, TENON_RIB_H, TENON_R } from '../params.ts';
+import { memo } from '../memo.ts';
+import { FIT_CLEARANCE, ROD_FLAT, ROD_HOLE_R, ROD_R, SOCKET_R, TENON_RIB_H, TENON_R } from '../params.ts';
 
 /** Block size (mm): just enough wall around the two holes. */
 const BLOCK: { x: number; y: number; z: number } = { x: 32, y: 16, z: 10 };
@@ -28,8 +29,10 @@ const TENON_FLAT = 0.4;
 /** Keep only z >= 0 (the print bed). */
 const aboveBed = (m: Manifold): Manifold => m.intersect(box([-100, -100, 0], [100, 100, 100]));
 
-export function fitTest(): Manifold {
-  const rodHole = cyl(-1, BLOCK.z + 1, ROD_HOLE_R).subtract(flatCut(ROD_FLAT + FIT_D, -2, BLOCK.z + 2));
+export const fitTest = memo((): Manifold => {
+  const rodHole = cyl(-1, BLOCK.z + 1, ROD_HOLE_R).subtract(
+    flatCut(ROD_FLAT + FIT_CLEARANCE, -2, BLOCK.z + 2),
+  );
   const block = box([-BLOCK.x / 2, -BLOCK.y / 2, 0], [BLOCK.x / 2, BLOCK.y / 2, BLOCK.z])
     .subtract(cyl(SOCKET_FLOOR, BLOCK.z + 1, SOCKET_R).translate([SOCKET_X, 0, 0]))
     .subtract(rodHole.translate([ROD_HOLE_X, 0, 0]));
@@ -43,4 +46,4 @@ export function fitTest(): Manifold {
     .rotate([0, -90, 0]) // flat side down
     .translate([ROD_LEN / 2, -(BLOCK.y / 2 + 3 + ROD_R), ROD_FLAT]);
   return union([block, tenon, rod]);
-}
+});
