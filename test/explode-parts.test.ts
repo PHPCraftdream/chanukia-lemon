@@ -8,8 +8,8 @@ import type { Manifold } from '../src/geom.ts';
 import { mirrorX } from '../src/geom.ts';
 import { explodeOffset } from '../web/src/viewer/explode.ts';
 
-/** Slider positions after the rods are out (pins still leaving their sockets at the start). */
-const STEPS = [0.45, 0.55, 0.65, 0.8, 1];
+/** Slider positions after the rod is out: coming apart under the rising rod, then the rod halves parting. */
+const STEPS = [0.35, 0.45, 0.55, 0.65, 0.75, 0.9, 1];
 /** Overlap allowed between two copies: crush ribs of a pin leaving its socket, mm³. */
 const MAX_OVERLAP = 6;
 

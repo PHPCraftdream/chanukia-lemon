@@ -8,15 +8,22 @@
  *
  * @module
  */
+import type { SplitJoint } from './fits.ts';
 import type { Vec2 } from './geom.ts';
+import { memo } from './memo.ts';
 import {
   BRANCHES,
   CUP_SHIFT,
+  FOOT_PIN_L,
   JBULB_H,
+  KEY_RIB_H,
+  KEY_R,
   KNOP_H,
   PITCH,
   R,
   STEM_OFFSET,
+  STEM_PIN_RIB_H,
+  STEM_PIN_R,
   STEM_R,
   T_BODY0,
   TOP_KNOP_BACK,
@@ -73,12 +80,12 @@ export const branchLen = (j: number): number => (j * PITCH + STEM_OFFSET) * Math
  * under the cups, further rows every PITCH lower (less {@link KNOP_DROP}). Ascending; the
  * last one is the top knop.
  */
-export function knopTs(j: number): number[] {
+export const knopTs = memo((j: number): readonly number[] => {
   const top = branchLen(j) - TOP_KNOP_BACK;
   const out: number[] = [top];
   for (let t = top - KNOP_STEP - KNOP_DROP * Math.SQRT2; t >= KNOP_MIN_T; t -= KNOP_STEP) out.push(t);
   return out.reverse();
-}
+});
 
 const isLongSpan = ([a, b]: Vec2): boolean => b - a > MIN_FLAME_SPAN;
 const afterKnopLeaves = (t: number): number => t + SPAN_AFTER_KNOP;
@@ -112,17 +119,28 @@ export const SHAMASH_CONE_Z = Z_SHAMASH - (R - STEM_R);
  */
 export const SHAMASH_SPLIT_Z = bulbZ(0) + STEM_LEAF_ZC + STEM_LEAF_LEN / 2 + 1;
 
-/** XY of the stem split pins (off the branch plane, so the halves key in rotation). */
-export const STEM_PINS: readonly Vec2[] = [
-  [0, 6.5],
-  [0, -6.5],
-];
+/** Stem split joints; pins off the branch plane, so the halves key in rotation. */
+export const STEM_JOINT: SplitJoint = {
+  pins: [
+    [0, 6.5],
+    [0, -6.5],
+  ],
+  r: STEM_PIN_R,
+  h: STEM_PIN_RIB_H,
+};
 
-/** XY (branch frame) of the pins of the long-branch split joint. */
-export const BRANCH_PINS: readonly Vec2[] = [
-  [5.0, 0],
-  [-5.0, 0],
-];
+/** Foot joint: the stem joint with shorter pins. */
+export const FOOT_JOINT: SplitJoint = { ...STEM_JOINT, len: FOOT_PIN_L };
+
+/** Long-branch split joint (pins in the branch frame). */
+export const BRANCH_JOINT: SplitJoint = {
+  pins: [
+    [5.0, 0],
+    [-5.0, 0],
+  ],
+  r: KEY_R,
+  h: KEY_RIB_H,
+};
 
 /**
  * Branches printed in two halves: inner (into the stem) and outer (with the cup) — shorter
@@ -133,7 +151,7 @@ export const SPLIT_BRANCHES: readonly number[] = [2, 3, 4];
 export const isSplitBranch = (j: number): boolean => SPLIT_BRANCHES.includes(j);
 
 /** Split position `t` of a branch: the knop nearest its middle. */
-export function branchSplitT(j = BRANCHES): number {
+export const branchSplitT = memo((j: number = BRANCHES): number => {
   const mid = branchLen(j) / 2;
   return knopTs(j).reduce((best, t) => (Math.abs(t - mid) < Math.abs(best - mid) ? t : best));
-}
+});

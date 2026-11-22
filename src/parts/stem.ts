@@ -13,28 +13,30 @@ import { decorate, flameRing, leafRing } from '../decor.ts';
 import { rodHole, splitZ } from '../fits.ts';
 import {
   BRANCH_IDS,
+  FOOT_JOINT,
   FOOT_SPLIT_Z,
   SHAMASH_CONE_Z,
   SHAMASH_SPLIT_Z,
+  STEM_BULBS,
+  STEM_JOINT,
   STEM_LEAF_LEN,
   STEM_LEAF_ZC,
-  STEM_BULBS,
-  STEM_PINS,
   STEM_SPLIT_Z,
   bulbZ,
   junctionZ,
 } from '../layout.ts';
+import { memo } from '../memo.ts';
 import {
   BRANCHES,
   BRANCH_R,
   CUP_H,
+  FIT_CLEARANCE,
   FOOT_R,
   JBULB_H,
   JBULB_R,
+  PIN_TIP_ROOM,
   R,
   SOCKET_R,
-  STEM_PIN_RIB_H,
-  STEM_PIN_R,
   STEM_R,
   T_BODY0,
   T_SOCK1,
@@ -48,8 +50,6 @@ const STEM_LEAF_ANGLES: readonly number[] = [60, 90, 120, 240, 270, 300];
 /** Flames per ring on the stem; phase keeps them off the rod line (0°/180°). */
 const STEM_FLAMES = 6;
 const STEM_FLAME_PHASE = 30;
-/** Radial clearance of the tube recess around a branch tube. */
-const RECESS_CLEARANCE = 0.15;
 /** Length of the tube recess along the branch axis. */
 const RECESS_LEN = 30;
 
@@ -99,8 +99,8 @@ function stemFlames(): Manifold[] {
 /** Tenon socket + tube recess for the right branch of pair `j` (world frame). */
 const branchSocket = (j: number): Manifold =>
   union([
-    cyl(T_TENON0 - 0.5, T_SOCK1, SOCKET_R),
-    cyl(T_BODY0, T_BODY0 + RECESS_LEN, BRANCH_R + RECESS_CLEARANCE),
+    cyl(T_TENON0 - PIN_TIP_ROOM, T_SOCK1, SOCKET_R),
+    cyl(T_BODY0, T_BODY0 + RECESS_LEN, BRANCH_R + FIT_CLEARANCE),
   ])
     .rotate([0, 45, 0])
     .translate([0, 0, junctionZ(j)]);
@@ -111,22 +111,24 @@ function stemCuts(): Manifold {
   return union([rodHole(-30), ...sockets, ...sockets.map(mirrorX)]);
 }
 
+/** The decorated stem without cuts. */
+const stemSolid = memo((): Manifold =>
+  decorate(union([stemBody(), ...STEM_BULBS.flatMap(bulb), ...stemFlames()]), Z_SHAMASH, STEM_R),
+);
+
 /**
  * The whole stem in assembled position.
  *
  * @param drill cut sockets, recesses and the rod hole (printable) or not (display solid)
  */
-export function stem(drill = false): Manifold {
-  const m = decorate(union([stemBody(), ...STEM_BULBS.flatMap(bulb), ...stemFlames()]), Z_SHAMASH, STEM_R);
-  return drill ? m.subtract(stemCuts()) : m;
-}
+export const stem = memo((drill = false): Manifold =>
+  drill ? stemSolid().subtract(stemCuts()) : stemSolid(),
+);
 
 /** Printable stem split into `[foot, lower, upper, shamash cup]` (assembled position). */
-export function stemPieces(): [Manifold, Manifold, Manifold, Manifold] {
-  const cut = (m: Manifold, z: number): [Manifold, Manifold] =>
-    splitZ(m, z, STEM_PINS, STEM_PIN_R, STEM_PIN_RIB_H);
-  const [foot, stemAbove] = cut(stem(true), FOOT_SPLIT_Z);
-  const [lower, rest] = cut(stemAbove, STEM_SPLIT_Z);
-  const [upper, cup] = cut(rest, SHAMASH_SPLIT_Z);
+export const stemPieces = memo((): [Manifold, Manifold, Manifold, Manifold] => {
+  const [foot, stemAbove] = splitZ(stem(true), FOOT_SPLIT_Z, FOOT_JOINT);
+  const [lower, rest] = splitZ(stemAbove, STEM_SPLIT_Z, STEM_JOINT);
+  const [upper, cup] = splitZ(rest, SHAMASH_SPLIT_Z, STEM_JOINT);
   return [foot, lower, upper, cup];
-}
+});

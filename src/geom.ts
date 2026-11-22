@@ -4,11 +4,13 @@
  * Manifold WASM initialisation, memory tracking and small geometry primitives.
  *
  * Every Manifold / CrossSection created through the API is tracked; call {@link cleanup}
- * after a part's mesh has been extracted to free WASM memory.
+ * after a part's mesh has been extracted to free WASM memory; cached results (see memo.ts)
+ * are kept.
  *
  * @module
  */
 import Module from 'manifold-3d';
+import { isMemoized } from './memo.ts';
 import { SEG } from './params.ts';
 
 const wasm = await Module();
@@ -107,9 +109,10 @@ export function crossSection(polys: Vec2[][]): CrossSection {
   return track(new wasm.CrossSection(polys, 'Positive'));
 }
 
-/** Free all WASM objects created since the last cleanup. */
+/** Free all WASM objects created since the last cleanup, except cached ones. */
 export function cleanup(): void {
   for (const o of registry) {
+    if (isMemoized(o)) continue;
     try {
       o.delete();
     } catch {

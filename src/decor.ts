@@ -8,6 +8,7 @@
  */
 import { Manifold, ellipsoid, evenAngles, extrude, linspace, revolve, ringAround, union } from './geom.ts';
 import type { Vec2, Vec3 } from './geom.ts';
+import { memo } from './memo.ts';
 import {
   CUP_H,
   FLAME_EMBED,
@@ -130,6 +131,17 @@ export interface LeafRingSpec {
   angles?: readonly number[];
 }
 
+/** A leaf ring at height 0, shared by all rings of the same shape. */
+const leafRingShape = memo(
+  (radial: number, length: number, width: number, thick: number, tilt: number, angles: readonly number[]) =>
+    ringAround(
+      ellipsoid(thick, width, length / 2)
+        .rotate([0, tilt, 0])
+        .translate([radial, 0, 0]),
+      angles,
+    ),
+);
+
 /** Leaves around an axis (Z), hugging the surface when `tilt` is 0. */
 export function leafRing({
   radial,
@@ -140,10 +152,7 @@ export function leafRing({
   tilt = 0,
   angles = evenAngles(6),
 }: LeafRingSpec): Manifold {
-  const leaf = ellipsoid(thick, width, length / 2)
-    .rotate([0, tilt, 0])
-    .translate([radial, 0, zc]);
-  return ringAround(leaf, angles);
+  return leafRingShape(radial, length, width, thick, tilt, angles).translate([0, 0, zc]);
 }
 
 // ---------------------------------------------------------------- flames
@@ -190,40 +199,43 @@ const cylinderWrap =
  * Flame tongue (tip up, S-sway) with leaf veins, wrapped onto a cylinder of radius `rb`
  * around Z; centred at angle 0, spans `z = 0..length`.
  */
-export function flame(
-  rb: number,
-  length: number,
-  width: number,
-  sway = FLAME_SWAY,
-  nseg = FLAME_SEGMENTS,
-): Manifold {
-  const centre = (s: number): number => sway * width * Math.sin(1.6 * Math.PI * s) * s;
-  const halfWidth = (s: number): number => (width / 2) * Math.sin(Math.PI * s ** 0.6) ** 1.1 * (1 - 0.25 * s);
-  const at = (s: number, side: number): Vec2 => [centre(s) + side * halfWidth(s), s * length];
+export const flame = memo(
+  (
+    rb: number,
+    length: number,
+    width: number,
+    sway: number = FLAME_SWAY,
+    nseg: number = FLAME_SEGMENTS,
+  ): Manifold => {
+    const centre = (s: number): number => sway * width * Math.sin(1.6 * Math.PI * s) * s;
+    const halfWidth = (s: number): number =>
+      (width / 2) * Math.sin(Math.PI * s ** 0.6) ** 1.1 * (1 - 0.25 * s);
+    const at = (s: number, side: number): Vec2 => [centre(s) + side * halfWidth(s), s * length];
 
-  const ss = linspace(0, 1, nseg + 1);
-  const outline = [
-    ...ss.map((s) => at(s, 1)),
-    ...ss
-      .slice(1, -1)
-      .reverse()
-      .map((s) => at(s, -1)),
-  ];
-  const body = extrude(outline, FLAME_RELIEF + FLAME_EMBED).translate([0, 0, -FLAME_EMBED]);
+    const ss = linspace(0, 1, nseg + 1);
+    const outline = [
+      ...ss.map((s) => at(s, 1)),
+      ...ss
+        .slice(1, -1)
+        .reverse()
+        .map((s) => at(s, -1)),
+    ];
+    const body = extrude(outline, FLAME_RELIEF + FLAME_EMBED).translate([0, 0, -FLAME_EMBED]);
 
-  const mid = linspace(0.08, 0.85, 12);
-  const veins = mid
-    .slice(1)
-    .map((s, i) => quad([centre(mid[i]), mid[i] * length], [centre(s), s * length], VEIN_W));
-  for (const sv of SIDE_VEINS) {
-    const from: Vec2 = [centre(sv), sv * length];
-    for (const sg of [1, -1]) {
-      veins.push(quad(from, [from[0] + sg * 0.65 * halfWidth(sv), from[1] + 0.12 * length], VEIN_W * 0.8));
+    const mid = linspace(0.08, 0.85, 12);
+    const veins = mid
+      .slice(1)
+      .map((s, i) => quad([centre(mid[i]), mid[i] * length], [centre(s), s * length], VEIN_W));
+    for (const sv of SIDE_VEINS) {
+      const from: Vec2 = [centre(sv), sv * length];
+      for (const sg of [1, -1]) {
+        veins.push(quad(from, [from[0] + sg * 0.65 * halfWidth(sv), from[1] + 0.12 * length], VEIN_W * 0.8));
+      }
     }
-  }
-  const cut = union(veins.map(veinCutter));
-  return body.subtract(cut).refineToLength(FLAME_REFINE).warp(cylinderWrap(rb));
-}
+    const cut = union(veins.map(veinCutter));
+    return body.subtract(cut).refineToLength(FLAME_REFINE).warp(cylinderWrap(rb));
+  },
+);
 
 /** `n` flames around a cylinder of radius `rb`, from `z0` over `length`; `fill` = share of the circumference. */
 export function flameRing(

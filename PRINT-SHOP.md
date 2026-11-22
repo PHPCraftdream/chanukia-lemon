@@ -67,8 +67,8 @@ round hole, the one with a flat into the D-shaped hole.
    the joints.
 2. Insert the branches from the stem outwards: 1, then the inner halves of 2, 3 and 4, then
    the outer halves with the cups; glue every joint.
-3. Push the rod halves through the top knops under the cups from both sides until they snap
-   inside the stem.
+3. Join the rod halves on their pin and glue the joint, then push the whole rod from one side
+   through the top knops under the cups until both ends are flush with the outer knops.
 4. Put a drop of epoxy or CA glue into every rod hole in the top knops from the back.
 
 ## Safety and licence

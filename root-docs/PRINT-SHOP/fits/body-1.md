@@ -18,8 +18,8 @@ round hole, the one with a flat into the D-shaped hole.
    the joints.
 2. Insert the branches from the stem outwards: 1, then the inner halves of 2, 3 and 4, then
    the outer halves with the cups; glue every joint.
-3. Push the rod halves through the top knops under the cups from both sides until they snap
-   inside the stem.
+3. Join the rod halves on their pin and glue the joint, then push the whole rod from one side
+   through the top knops under the cups until both ends are flush with the outer knops.
 4. Put a drop of epoxy or CA glue into every rod hole in the top knops from the back.
 
 >>>>> lang=ru
@@ -40,8 +40,9 @@ round hole, the one with a flat into the D-shaped hole.
 1. Соединить подставку, низ ствола, верх ствола и чашу шамаша на штырях и проклеить стыки.
 2. Вставить ветви от ствола наружу: 1, затем внутренние половины 2, 3 и 4, потом внешние
    половины с чашами; каждый стык проклеить.
-3. Продвинуть половины стержня через верхние завязи под чашами с двух сторон до защёлкивания
-   в стволе.
+3. Соединить половины стержня на штыре и проклеить стык, затем продвинуть целый стержень с
+   одной стороны через верхние завязи под чашами, пока оба конца не встанут вровень с крайними
+   завязями.
 4. Капнуть эпоксидку или цианоакрилат в каждое отверстие стержня в верхних завязях с тыльной
    стороны.
 
@@ -62,7 +63,7 @@ round hole, the one with a flat into the D-shaped hole.
 1. מחברים את הבסיס, החלק התחתון, החלק העליון וגביע השמש על הפינים ומדביקים את החיבורים.
 2. מכניסים את הקנים מהגזע החוצה: 1, אחר כך החצאים הפנימיים של 2, 3 ו־4, ולבסוף את החצאים
    החיצוניים עם הגביעים; מדביקים כל חיבור.
-3. דוחפים את חצאי המוט דרך הכפתורים העליונים שמתחת לגביעים משני הצדדים עד שהם ננעלים בתוך
-   הגזע.
+3. מחברים את חצאי המוט בפין ומדביקים את החיבור, ואז דוחפים את המוט השלם מצד אחד דרך הכפתורים
+   העליונים שמתחת לגביעים, עד ששני קצותיו מיושרים עם הכפתורים החיצוניים.
 4. מטפטפים אפוקסי או ציאנואקרילט לכל חור של המוט בכפתורים העליונים מהצד האחורי.
 

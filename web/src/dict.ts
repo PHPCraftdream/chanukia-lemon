@@ -112,7 +112,7 @@ export const en = {
     'Insert the branches from the stem outwards: 1, the inner halves of 2–4, then the outer halves with the cups. Glue every joint.',
   'asm.s3.t': 'Stiffening rod',
   'asm.s3.d':
-    'Slide the two rod halves through the top knops under the cups from both sides until the joint inside the stem snaps.',
+    'Join the two rod halves on their pin and glue them, then push the whole rod from one side through the top knops under the cups until both ends are flush with the outer knops.',
   'asm.s4.t': 'Glue',
   'asm.s4.d': 'Put a drop of epoxy or CA glue into every rod hole in the top knops from the back.',
   'safety.title': 'Safety',
@@ -236,7 +236,7 @@ export const ru: Dict = {
     'Вставьте ветви от ствола наружу: 1, внутренние половины 2–4, затем внешние половины с чашами. Каждый стык проклейте.',
   'asm.s3.t': 'Стержень жёсткости',
   'asm.s3.d':
-    'Продвиньте половины стержня через верхние завязи под чашами с двух сторон до защёлкивания стыка в стволе.',
+    'Соедините половины стержня на штыре и проклейте, затем продвиньте целый стержень с одной стороны через верхние завязи под чашами, пока оба конца не встанут вровень с крайними завязями.',
   'asm.s4.t': 'Клей',
   'asm.s4.d':
     'Капните эпоксидку или цианоакрилат в каждое отверстие стержня в верхних завязях с тыльной стороны.',
@@ -349,7 +349,7 @@ export const he: Dict = {
     'הכניסו את הקנים מהגזע החוצה: 1, החצאים הפנימיים של 2–4, ואחר כך החצאים החיצוניים עם הגביעים. הדביקו כל חיבור.',
   'asm.s3.t': 'מוט חיזוק',
   'asm.s3.d':
-    'החליקו את שני חצאי המוט דרך הכפתורים העליונים שמתחת לגביעים משני הצדדים עד שהחיבור בתוך הגזע ננעל.',
+    'חברו את שני חצאי המוט בפין והדביקו, ואז דחפו את המוט השלם מצד אחד דרך הכפתורים העליונים שמתחת לגביעים, עד ששני קצותיו מיושרים עם הכפתורים החיצוניים.',
   'asm.s4.t': 'הדבקה',
   'asm.s4.d': 'טפטפו אפוקסי או דבק מגע לכל חור של המוט בכפתורים העליונים מהצד האחורי.',
   'safety.title': 'בטיחות',

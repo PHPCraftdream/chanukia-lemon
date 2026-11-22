@@ -9,12 +9,11 @@
 import { Manifold, cyl, ellipsoid, ground, union } from '../geom.ts';
 import { flameRing, leafRing } from '../decor.ts';
 import { ribbed, rodHole, splitZ } from '../fits.ts';
-import { BRANCH_PINS, branchFlameSpans, branchSplitT, cupX, junctionZ, knopTs } from '../layout.ts';
+import { BRANCH_JOINT, branchFlameSpans, branchSplitT, cupX, junctionZ, knopTs } from '../layout.ts';
+import { memo } from '../memo.ts';
 import {
   BRANCHES,
   BRANCH_R,
-  KEY_RIB_H,
-  KEY_R,
   KNOP_H,
   KNOP_R,
   ROD_HOLE_BR_R,
@@ -36,7 +35,7 @@ const knopLeaves = (t: number): Manifold =>
 const spanFlames = ([a, b]: [number, number]): Manifold => flameRing(BRANCH_R, a, b - a, 4, 45);
 
 /** Branch `j` along local +Z from the stem axis (t = distance along the axis), without its cup. */
-export function branchLocal(j: number): Manifold {
+export const branchLocal = memo((j: number): Manifold => {
   const ks = knopTs(j);
   const top = ks[ks.length - 1];
   return union([
@@ -48,23 +47,26 @@ export function branchLocal(j: number): Manifold {
       .flatMap((t) => [ellipsoid(KNOP_R, KNOP_R, KNOP_H).translate([0, 0, t]), knopLeaves(t)]),
     ...branchFlameSpans(j).map(spanFlames),
   ]);
-}
+});
+
+/** Branch `j` with its cup in assembled position, without the rod hole. */
+const branchSolid = memo((j: number): Manifold => {
+  const jz = junctionZ(j);
+  const cup = rowCup().translate([cupX(j), 0, Z_CUP - jz]);
+  return union([branchLocal(j).rotate([0, 45, 0]), cup]).translate([0, 0, jz]);
+});
 
 /**
  * Branch `j` with its cup in assembled position (+X side, junction on the stem axis).
  *
  * @param drill cut the rod hole through the cup (printable part) or not (display solid)
  */
-export function branchWorld(j: number, drill = false): Manifold {
-  const x = cupX(j);
-  const jz = junctionZ(j);
-  const cup = rowCup().translate([x, 0, Z_CUP - jz]);
-  const m = union([branchLocal(j).rotate([0, 45, 0]), cup]).translate([0, 0, jz]);
-  return drill ? m.subtract(rodHole(x - 30, 60, ROD_HOLE_BR_R)) : m;
-}
+export const branchWorld = memo((j: number, drill = false): Manifold =>
+  drill ? branchSolid(j).subtract(rodHole(cupX(j) - 30, 60, ROD_HOLE_BR_R)) : branchSolid(j),
+);
 
 /** World part -> branch frame (junction at the origin, axis along +Z). */
-const toBranchFrame = (m: Manifold, j: number): Manifold =>
+export const toBranchFrame = (m: Manifold, j: number): Manifold =>
   m.translate([0, 0, -junctionZ(j)]).rotate([0, -45, 0]);
 
 /** Branch frame -> world (assembled position). */
@@ -72,16 +74,10 @@ const fromBranchFrame = (m: Manifold, j: number): Manifold =>
   m.rotate([0, 45, 0]).translate([0, 0, junctionZ(j)]);
 
 /** Branch `j` split in two at the knop nearest its middle, in assembled position: `[inner, outer]`. */
-export function branchHalves(j = BRANCHES): [Manifold, Manifold] {
-  const [inner, outer] = splitZ(
-    toBranchFrame(branchWorld(j, true), j),
-    branchSplitT(j),
-    BRANCH_PINS,
-    KEY_R,
-    KEY_RIB_H,
-  );
+export const branchHalves = memo((j: number = BRANCHES): [Manifold, Manifold] => {
+  const [inner, outer] = splitZ(toBranchFrame(branchWorld(j, true), j), branchSplitT(j), BRANCH_JOINT);
   return [fromBranchFrame(inner, j), fromBranchFrame(outer, j)];
-}
+});
 
 /** Print orientation of a branch part: axis horizontal along +X, resting on the bed. */
 export const layBranch = (worldPart: Manifold, j: number): Manifold =>

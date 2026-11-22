@@ -84,15 +84,16 @@ Use tea lights only in their aluminium cups and never leave a lit hanukkiah unat
 2. Insert the branches **from the stem outwards**: 1, then the inner halves of 2, 3 and 4,
    then put the outer halves with the cups onto them. Each piece slides in along its own
    axis: the tenon into the socket, the tube into the recess of the knob. Glue every joint.
-3. Push the two rod halves through the top knops under the cups from both sides until the
-   "jack" inside the stem snaps in.
+3. Join the two rod halves on their "jack" pin and glue the joint. Then push the whole rod
+   from one side through the top knops under the cups and the stem until both ends are flush
+   with the outer knops (the joint then sits inside the stem).
 4. Put a drop of glue (epoxy or CA) into every rod hole in the top knops from the back.
 
 Fits: 0.15 mm clearance per side on the body of a part; the crush ribs give about 0.1 mm
 of interference. The rod holes in the knops are oversized (0.75 mm clearance) to absorb print
 errors and shrinkage; the precise hole in the stem sets the rod line. If the fit test is too
-tight or too loose, adjust `SOCKET_R`, `ROD_HOLE_R` and the rib heights `*_RIB_H` in
-`src/params.ts` and rebuild.
+tight or too loose, adjust `FIT_CLEARANCE` (the clearance of every socket and of the rod
+hole in the stem) and the rib heights `*_RIB_H` in `src/params.ts` and rebuild.
 
 ## Parameters
 
